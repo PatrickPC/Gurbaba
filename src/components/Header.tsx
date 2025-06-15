@@ -90,7 +90,7 @@ const Header = () => {
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             
-            <Link to="/" className="flex-1 text-center md:flex-initial">
+            <Link to="/" className="flex-1 text-center">
               <div className="text-lg md:text-xl font-bold text-gray-900 tracking-wider">
                 THE KATHMANDU POST
               </div>
