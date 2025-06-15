@@ -1,11 +1,10 @@
 
 import { useState, useEffect } from 'react';
-import { Search, Menu, X, User } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const categories = [
@@ -40,7 +39,7 @@ const Header = () => {
 
         {/* Main Header */}
         <div className="container mx-auto px-4">
-          {/* Logo and Weather Info */}
+          {/* Logo */}
           <div className="flex justify-between items-center py-4">
             <button 
               className="md:hidden"
@@ -58,32 +57,9 @@ const Header = () => {
               </div>
             </Link>
 
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 hover:bg-gray-100 rounded-full"
-              >
-                <Search size={20} />
-              </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full">
-                <User size={20} />
-              </button>
-            </div>
+            {/* Empty div to balance the layout on mobile */}
+            <div className="w-6 md:hidden"></div>
           </div>
-
-          {/* Search Bar */}
-          {isSearchOpen && (
-            <div className="pb-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search news..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                />
-                <Search className="absolute right-3 top-2.5 text-gray-400" size={20} />
-              </div>
-            </div>
-          )}
 
           {/* Navigation */}
           <nav className={`border-t border-gray-200 ${isMenuOpen ? 'block' : 'hidden'} md:block`}>
@@ -120,17 +96,8 @@ const Header = () => {
               </div>
             </Link>
 
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 hover:bg-gray-100 rounded-full"
-              >
-                <Search size={18} />
-              </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full">
-                <User size={18} />
-              </button>
-            </div>
+            {/* Empty div to balance the layout on mobile */}
+            <div className="w-5 md:hidden"></div>
           </div>
 
           {/* Compact Navigation */}
@@ -148,20 +115,6 @@ const Header = () => {
               ))}
             </ul>
           </nav>
-
-          {/* Compact Search Bar */}
-          {isSearchOpen && (
-            <div className="pb-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search news..."
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                />
-                <Search className="absolute right-3 top-2.5 text-gray-400" size={16} />
-              </div>
-            </div>
-          )}
         </div>
       </header>
     </>
