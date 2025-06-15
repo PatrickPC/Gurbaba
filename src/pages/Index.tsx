@@ -9,14 +9,27 @@ import { mockNews } from '../data/mockNews';
 const Index = () => {
   const [featuredNews] = useState(mockNews[0]);
   const [mainNews] = useState(mockNews.slice(1, 4));
-  const [sidebarNews] = useState(mockNews.slice(4));
+  const [sidebarNews] = useState(mockNews.filter(news => news.category === 'Opinion'));
 
   const categoryNews = {
     Politics: mockNews.filter(news => news.category === 'Politics'),
     Sports: mockNews.filter(news => news.category === 'Sports'),
     Money: mockNews.filter(news => news.category === 'Money'),
-    Opinion: mockNews.filter(news => news.category === 'Opinion')
+    'Science & Technology': mockNews.filter(news => news.category === 'Science & Technology'),
+    World: mockNews.filter(news => news.category === 'World'),
+    Features: mockNews.filter(news => news.category === 'Features'),
+    Columns: mockNews.filter(news => news.category === 'Columns'),
+    Editorial: mockNews.filter(news => news.category === 'Editorial'),
+    Interviews: mockNews.filter(news => news.category === 'Interviews')
   };
+
+  const weatherData = [
+    { date: "Today's weather: June 15, 2025", temp: "21.8°C" },
+    { date: "Today's weather: June 14, 2025", temp: "22.1°C" },
+    { date: "Today's weather: June 13, 2025", temp: "20.5°C" },
+    { date: "Today's weather: June 12, 2025", temp: "19.8°C" },
+    { date: "Today's weather: June 11, 2025", temp: "23.2°C" }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -38,7 +51,7 @@ const Index = () => {
                 <h2 className="text-xl font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
                   OPINION
                 </h2>
-                {sidebarNews.map((news) => (
+                {sidebarNews.slice(0, 3).map((news) => (
                   <div key={news.id} className="mb-6">
                     <h3 className="font-semibold text-gray-900 mb-2 hover:text-red-600 transition-colors">
                       <a href={`/news/${news.id}`}>{news.title}</a>
@@ -63,9 +76,230 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Category Sections */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {Object.entries(categoryNews).map(([category, articles]) => (
+        {/* Four Column Category Sections */}
+        <section className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+          {/* Science & Technology */}
+          <div>
+            <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
+              SCIENCE & TECHNOLOGY
+            </h2>
+            <div className="space-y-4">
+              {categoryNews['Science & Technology'].slice(0, 1).map((article) => (
+                <div key={article.id} className="group">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
+                  />
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
+                </div>
+              ))}
+              {categoryNews['Science & Technology'].slice(1, 4).map((article) => (
+                <div key={article.id} className="group">
+                  <h3 className="font-medium text-gray-900 mb-1 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Sports */}
+          <div>
+            <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
+              SPORTS
+            </h2>
+            <div className="space-y-4">
+              {categoryNews.Sports.slice(0, 1).map((article) => (
+                <div key={article.id} className="group">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
+                  />
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
+                </div>
+              ))}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-700">Bagmati win 15th Central President Running Shield with 36 golds</p>
+                <p className="text-sm text-gray-700">Junior athletes shatter more records</p>
+                <p className="text-sm text-gray-700">Nepal to play West Indies in September</p>
+                <p className="text-sm text-gray-700">Nepal's 12th man: Diaspora fans power the Rhinos in Scotland</p>
+              </div>
+            </div>
+          </div>
+
+          {/* World */}
+          <div>
+            <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
+              WORLD
+            </h2>
+            <div className="space-y-4">
+              {categoryNews.World.slice(0, 1).map((article) => (
+                <div key={article.id} className="group">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
+                  />
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
+                </div>
+              ))}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-700">Helicopter crash in northern India kills 7 on Hindu pilgrimage route</p>
+                <p className="text-sm text-gray-700">Minnesota manhunt underway for suspect in deadly shooting of Democratic state lawmakers</p>
+                <p className="text-sm text-gray-700">Israel and Iran strike at each other in new wave of attacks</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div>
+            <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
+              FEATURES
+            </h2>
+            <div className="space-y-4">
+              {categoryNews.Features.slice(0, 1).map((article) => (
+                <div key={article.id} className="group">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
+                  />
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
+                </div>
+              ))}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-700">Kites over Kathmandu sky</p>
+                <p className="text-sm text-gray-700">The Kumari tradition lives on, balancing ancient and modern values</p>
+                <p className="text-sm text-gray-700">The royal roots of Central Zoo</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Four Column Lower Sections */}
+        <section className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Columns */}
+          <div>
+            <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
+              COLUMNS
+            </h2>
+            <div className="space-y-4">
+              {categoryNews.Columns.slice(0, 1).map((article) => (
+                <div key={article.id} className="group">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
+                  />
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                </div>
+              ))}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-700">Uniting against divisive politics</p>
+                <p className="text-sm text-gray-700">Anthropocene in international relations</p>
+                <p className="text-sm text-gray-700">Shaping the contest of the century</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Editorial */}
+          <div>
+            <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
+              EDITORIAL
+            </h2>
+            <div className="space-y-4">
+              {categoryNews.Editorial.slice(0, 1).map((article) => (
+                <div key={article.id} className="group">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
+                  />
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                </div>
+              ))}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-700">Pride and procedure</p>
+                <p className="text-sm text-gray-700">Holding House hostage</p>
+                <p className="text-sm text-gray-700">Madhav Nepal's hard landing</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Interviews */}
+          <div>
+            <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
+              INTERVIEWS
+            </h2>
+            <div className="space-y-4">
+              {categoryNews.Interviews.slice(0, 1).map((article) => (
+                <div key={article.id} className="group">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
+                  />
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                </div>
+              ))}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-700">No budget for mega projects without breaking old structural constraints</p>
+                <p className="text-sm text-gray-700">Sagarmatha Sambaad is a learning opportunity for Nepal</p>
+                <p className="text-sm text-gray-700">Nepali judiciary is not sensitised on caste-based discrimination</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Weather */}
+          <div>
+            <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
+              WEATHER
+            </h2>
+            <div className="space-y-4">
+              <div className="bg-gradient-to-br from-blue-400 to-blue-600 text-white p-4 rounded">
+                <img
+                  src="https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800"
+                  alt="Weather"
+                  className="w-full h-32 object-cover rounded mb-3"
+                />
+                <h3 className="font-semibold mb-2">Today's weather: June 15, 2025</h3>
+              </div>
+              <div className="space-y-2">
+                {weatherData.slice(1).map((weather, index) => (
+                  <p key={index} className="text-sm text-gray-700">{weather.date}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Original Category Sections */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
+          {Object.entries({
+            Politics: categoryNews.Politics,
+            Money: categoryNews.Money
+          }).map(([category, articles]) => (
             articles.length > 0 && (
               <div key={category}>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 border-b-2 border-red-600 pb-2">

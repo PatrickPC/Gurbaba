@@ -8,7 +8,8 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const categories = [
-    'National', 'Politics', 'Valley', 'Opinion', 'Money', 'Sports', 'Culture & Lifestyle'
+    'National', 'Politics', 'Valley', 'Opinion', 'Money', 'Sports', 'Culture & Lifestyle',
+    'Science & Technology', 'World', 'Features', 'Columns', 'Editorial', 'Interviews'
   ];
 
   return (
@@ -73,12 +74,12 @@ const Header = () => {
 
         {/* Navigation */}
         <nav className={`border-t border-gray-200 ${isMenuOpen ? 'block' : 'hidden'} md:block`}>
-          <ul className="flex flex-col md:flex-row md:justify-center py-2">
+          <ul className="flex flex-col md:flex-row md:justify-center py-2 md:flex-wrap">
             {categories.map((category) => (
               <li key={category}>
                 <Link 
                   to={`/category/${category.toLowerCase().replace(' & ', '-').replace(' ', '-')}`}
-                  className="block px-4 py-2 text-gray-700 hover:text-red-600 hover:bg-gray-50 md:hover:bg-transparent transition-colors"
+                  className="block px-3 py-2 text-sm text-gray-700 hover:text-red-600 hover:bg-gray-50 md:hover:bg-transparent transition-colors"
                 >
                   {category}
                 </Link>

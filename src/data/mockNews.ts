@@ -1,4 +1,3 @@
-
 export interface NewsItem {
   id: string;
   title: string;
@@ -119,6 +118,91 @@ Citizens must remain vigilant and demand accountability from their leaders to pr
     publishedAt: "June 15, 2025",
     category: "Opinion",
     tags: ["politics", "institutions", "democracy", "accountability", "opinion"],
+    location: "Kathmandu"
+  },
+  // New categories
+  {
+    id: "6",
+    title: "AI breakthrough promises to revolutionize medical diagnosis",
+    excerpt: "New machine learning algorithms can detect diseases with 95% accuracy, faster than human doctors.",
+    content: `Researchers at Nepal Institute of Technology have developed an AI system that can diagnose various diseases with unprecedented accuracy and speed.`,
+    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800",
+    author: "Tech Reporter",
+    publishedAt: "June 15, 2025",
+    category: "Science & Technology",
+    tags: ["AI", "medical", "technology", "healthcare"],
+    location: "Kathmandu"
+  },
+  {
+    id: "7",
+    title: "Gamers line up for Nintendo Switch 2 launch with global shortfall expected",
+    excerpt: "OpenAI, Google and xAI battle for superstar AI talent, shelling out millions",
+    content: `Gaming enthusiasts across Nepal are queuing up for the highly anticipated Nintendo Switch 2 console launch.`,
+    image: "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800",
+    author: "Gaming Correspondent",
+    publishedAt: "June 15, 2025",
+    category: "Science & Technology",
+    tags: ["gaming", "nintendo", "technology"],
+    location: "Kathmandu"
+  },
+  {
+    id: "8",
+    title: "Cambodia turns to World Court over Thailand border disputes",
+    excerpt: "Israel and Iran strike at each other as Trump says conflict can be easily ended",
+    content: `Cambodia has filed a complaint with the International Court of Justice regarding ongoing border disputes with Thailand.`,
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800",
+    author: "International Correspondent",
+    publishedAt: "June 15, 2025",
+    category: "World",
+    tags: ["Cambodia", "Thailand", "border", "international"],
+    location: "Cambodia"
+  },
+  {
+    id: "9",
+    title: "Three generations devoted to care of Central Zoo animals",
+    excerpt: "Are Nepali independent singers struggling for a platform?",
+    content: `A heartwarming story of three generations of a family who have dedicated their lives to caring for animals at the Central Zoo.`,
+    image: "https://images.unsplash.com/photo-1549490349-8643362247b5?w=800",
+    author: "Feature Writer",
+    publishedAt: "June 15, 2025",
+    category: "Features",
+    tags: ["zoo", "animals", "family", "dedication"],
+    location: "Kathmandu"
+  },
+  {
+    id: "10",
+    title: "Building sustainable cities allows governments to invest in rural areas",
+    excerpt: "Communist unity is a good wish, but there's no solid basis yet",
+    content: `An in-depth interview with urban planning expert Dr. Rajesh Khadka about sustainable city development in Nepal.`,
+    image: "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1f?w=800",
+    author: "Interview Team",
+    publishedAt: "June 15, 2025",
+    category: "Interviews",
+    tags: ["sustainability", "urban planning", "interview"],
+    location: "Kathmandu"
+  },
+  {
+    id: "11",
+    title: "Mental health care for LGBTQI+ community",
+    excerpt: "Uniting against divisive politics",
+    content: `A column discussing the importance of mental health support for the LGBTQI+ community in Nepal.`,
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800",
+    author: "Dr. Priya Sharma",
+    publishedAt: "June 15, 2025",
+    category: "Columns",
+    tags: ["mental health", "LGBTQI+", "community", "healthcare"],
+    location: "Kathmandu"
+  },
+  {
+    id: "12",
+    title: "Slippery slope",
+    excerpt: "Strengthen the base",
+    content: `Editorial discussing the current political climate and the need for stronger democratic institutions.`,
+    image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800",
+    author: "Editorial Board",
+    publishedAt: "June 15, 2025",
+    category: "Editorial",
+    tags: ["politics", "democracy", "editorial"],
     location: "Kathmandu"
   }
 ];
