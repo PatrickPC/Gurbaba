@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail, Phone, MapPin, Clock } from 'lucide-react';
 import Header from '../components/Header';
@@ -8,6 +7,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
+import Map from '../components/Map';
 
 const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
@@ -225,6 +225,24 @@ const Contact = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Map Section */}
+        <div className="mt-12">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="text-red-600" size={24} />
+                Find Us
+              </CardTitle>
+              <p className="text-gray-600">
+                Visit our office in the heart of Kathmandu
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Map className="h-96" />
+            </CardContent>
+          </Card>
         </div>
       </main>
 
