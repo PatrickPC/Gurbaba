@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Newspaper } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
@@ -50,6 +50,7 @@ const Header = () => {
             
             <Link to="/" className="flex-1 text-center">
               <div className="flex flex-col items-center">
+                <Newspaper size={32} className="text-gray-900 mb-2" />
                 <div className="text-2xl md:text-4xl font-bold text-gray-900 tracking-wider">
                   THE KATHMANDU POST
                 </div>
@@ -91,8 +92,11 @@ const Header = () => {
             </button>
             
             <Link to="/" className="flex-1 text-center">
-              <div className="text-lg md:text-xl font-bold text-gray-900 tracking-wider">
-                THE KATHMANDU POST
+              <div className="flex flex-col items-center">
+                <Newspaper size={20} className="text-gray-900 mb-1" />
+                <div className="text-lg md:text-xl font-bold text-gray-900 tracking-wider">
+                  THE KATHMANDU POST
+                </div>
               </div>
             </Link>
 
