@@ -8,7 +8,7 @@ import { mockNews } from '../data/mockNews';
 const NewsDetail = () => {
   const { id } = useParams();
   const article = mockNews.find(news => news.id === id);
-  const relatedNews = mockNews.filter(news => news.id !== id && news.category === article?.category).slice(0, 4);
+  const relatedNews = mockNews.filter(news => news.id !== id && news.category === article?.category).slice(0, 6);
 
   if (!article) {
     return (
@@ -154,7 +154,7 @@ const NewsDetail = () => {
               </h2>
               
               <div className="space-y-6">
-                {relatedNews.map((news) => (
+                {relatedNews.slice(0, 4).map((news) => (
                   <Link key={news.id} to={`/news/${news.id}`} className="block group">
                     <div className="flex gap-3">
                       <img
@@ -177,6 +177,41 @@ const NewsDetail = () => {
             </div>
           </aside>
         </div>
+
+        {/* Related News Section */}
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold text-red-600 mb-8 border-b-2 border-red-600 pb-2 inline-block">
+            RELATED NEWS
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {relatedNews.map((news) => (
+              <Link key={news.id} to={`/news/${news.id}`} className="block group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="relative">
+                  <img
+                    src={news.image}
+                    alt={news.title}
+                    className="w-full h-48 object-cover group-hover:opacity-90 transition-opacity"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+                    {news.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {news.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>{news.publishedAt}</span>
+                    <span className="bg-gray-100 px-2 py-1 rounded">
+                      {news.category}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
       </main>
 
       <Footer />
