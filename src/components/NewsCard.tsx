@@ -1,8 +1,8 @@
-
 import { Link } from 'react-router-dom';
 import { Clock, User } from 'lucide-react';
 
 interface NewsCardProps {
+  key: string;
   id: string;
   title: string;
   excerpt: string;

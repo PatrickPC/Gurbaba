@@ -9,87 +9,87 @@ const Staff = () => {
   const staffMembers = [
     {
       id: 1,
-      name: "Anup Kaphle",
-      position: "Editor-in-Chief",
-      department: "Editorial",
-      email: "anup@kathmandupost.com",
-      phone: "+977-1-4270774",
+      name: "एकराज चौधरी",
+      position: "कार्यकारी निर्देशक",
+      department: "Managing Director",
+      email: "vijayagochali@gmail.com",
+      phone: "+977-9858027130",
       joinDate: "2018",
       bio: "Veteran journalist with over 15 years of experience in print and digital media.",
-      image: "/placeholder.svg"
+      image: "src/images/ekraj.jpeg"
     },
     {
       id: 2,
-      name: "Priyanka Poudel",
-      position: "Deputy Editor",
-      department: "Editorial",
-      email: "priyanka@kathmandupost.com",
+      name: "पुष्पा चौधरी",
+      position: "स्टेसन म्यानेजर/सचिव",
+      department: "Station Manager",
+      email: "puspagurbaba@gmail.com",
       phone: "+977-1-4270775",
       joinDate: "2020",
       bio: "Specializes in political reporting and investigative journalism.",
-      image: "/placeholder.svg"
+      image: "src/images/pushpa.jpeg"
     },
     {
       id: 3,
-      name: "Rajesh Khadka",
-      position: "Sports Editor",
-      department: "Sports",
-      email: "rajesh@kathmandupost.com",
+      name: "रावन बिश्वकर्मा",
+      position: "समाचार बाचक",
+      department: "Staff",
+      email: "rajesh@gurbabapost.com",
       phone: "+977-1-4270776",
       joinDate: "2019",
       bio: "Covers national and international sports with focus on cricket and football.",
-      image: "/placeholder.svg"
+      image: "src/images/rawon.jpeg"
     },
     {
       id: 4,
-      name: "Sita Gurung",
-      position: "Business Reporter",
+      name: "हुम कुमार चौधरी",
+      position: "Staff",
       department: "Business",
-      email: "sita@kathmandupost.com",
+      email: "sita@gurbabapost.com",
       phone: "+977-1-4270777",
       joinDate: "2021",
       bio: "Covers financial markets, corporate news, and economic policy.",
-      image: "/placeholder.svg"
+      image: "src/images/humkumar.jpeg"
     },
     {
       id: 5,
-      name: "Arun Budhathoki",
-      position: "Technology Editor",
-      department: "Technology",
-      email: "arun@kathmandupost.com",
+      name: "अनोज थारु",
+      position: "कार्यक्रम उत्पादक",
+      department: "Program Producer",
+      email: "anojtharu1@gmail.com",
       phone: "+977-1-4270778",
       joinDate: "2020",
       bio: "Reports on technology trends, startups, and digital innovation in Nepal.",
-      image: "/placeholder.svg"
+      image: "src/images/anuj.jpeg"
     },
     {
       id: 6,
-      name: "Maya Sharma",
-      position: "Culture & Lifestyle Editor",
-      department: "Culture",
-      email: "maya@kathmandupost.com",
+      name: "बिन्दु चौधरी",
+      position: "समाचार बाचक",
+      department: "Staff",
+      email: "bundic209@gmail.com",
       phone: "+977-1-4270779",
       joinDate: "2019",
       bio: "Covers arts, culture, entertainment, and lifestyle trends.",
-      image: "/placeholder.svg"
+      image: "src/images/bindu.jpeg"
     },
     {
       id: 7,
-      name: "Bikash Sangraula",
-      position: "Photo Editor",
-      department: "Photography",
-      email: "bikash@kathmandupost.com",
+      name: "गौरीशंकर थारु",
+      position: "प्राबिधिक",
+      department: "Technician",
+      email: "rajarair980@gmail.com",
       phone: "+977-1-4270780",
       joinDate: "2017",
       bio: "Award-winning photojournalist specializing in documentary photography.",
-      image: "/placeholder.svg"
+      image: "src/images/gaurishankar.jpeg"
     },
     {
       id: 8,
       name: "Kritika Sigdel",
       position: "Digital Content Manager",
       department: "Digital",
-      email: "kritika@kathmandupost.com",
+      email: "kritika@gurbabapost.com",
       phone: "+977-1-4270781",
       joinDate: "2022",
       bio: "Manages online content strategy and social media presence.",

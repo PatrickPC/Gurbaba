@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -42,7 +41,7 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Featured Story */}
             <div className="lg:col-span-2">
-              <NewsCard {...featuredNews} featured={true} />
+              <NewsCard key={featuredNews.id} {...featuredNews} featured={true} />
             </div>
             
             {/* Sidebar News */}

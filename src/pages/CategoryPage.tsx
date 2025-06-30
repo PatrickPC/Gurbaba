@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Header from '../components/Header';
@@ -41,7 +41,7 @@ const CategoryPage = () => {
         {categoryNews.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categoryNews.map((news) => (
-              <NewsCard key={news.id} {...news} />
+              <NewsCard {...news} key={news.id} />
             ))}
           </div>
         ) : (

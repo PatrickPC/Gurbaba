@@ -28,9 +28,7 @@ const About = () => {
             
             <div className="prose max-w-none text-gray-700">
               <p className="mb-4 text-lg">
-                The Kathmandu Post was established in 1993 as Nepal's first privately-owned English-language daily newspaper. 
-                For over three decades, we have been at the forefront of independent journalism in Nepal, providing comprehensive 
-                coverage of national and international news.
+              गुर्बाबा एफएम प्राचिन सृजनशिल आदिबासी समाज बर्दिया द्धारा संचालित एफएम हो । यो एफएम २०६५ सालमा स्थापना भएको हाे । गुर्बाबा एफएम बर्दिया जिल्लाको बाँसगढी नगरपालिका ५ मा रहेको छ । बर्दिया जिल्ला नेपालकै सबैभन्दा बढी थारु जनघनत्व रहेको जिल्ला हो । यहाँ ५२ प्रतिसत भन्दा बढी थारु जातीका मानिस बसोबास गर्छन । शैक्षिक, आर्थिक, राजनितिक हीसाबले पछाडी पारिएका छन् । त्यसैले एफएमले थारु समुदायलाइ लक्षित गरेको छ । ८९.७ मेघाहर्जमा पंसारण हुने याे एफएमकाे ५०० वाट क्षमता रहेको छ । यो रेडियोको मुख्य भाषा थारु रहेको छ । त्यसका अलावा ५० प्रतिसत थारु भाषामा र ५० प्रतिसत नेपाली भाषामा कार्यक्रम प्रसारण गरीन्छ । स्थानीय समाचार, स्थानीय लोक भाषा लोक संस्कृतीलाइ प्राथमिकता दिने भएकोले यो एफएम थारु समुदायमा एकदमै लोकप्रिय रहेको छ ।
               </p>
               
               <p className="mb-4">
@@ -40,7 +38,7 @@ const About = () => {
               </p>
               
               <p className="mb-6">
-                Over the years, The Kathmandu Post has evolved from a small startup to become one of Nepal's most trusted 
+                Over the years, The Guraba Post has evolved from a small startup to become one of Nepal's most trusted 
                 news sources. We have embraced digital transformation while maintaining our commitment to journalistic excellence, 
                 reaching readers both in print and online across the globe.
               </p>
@@ -56,7 +54,7 @@ const About = () => {
 
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Awards & Recognition</h3>
               <p className="mb-4">
-                The Kathmandu Post has received numerous awards for journalistic excellence, including recognition from 
+                The Gurbaba Post has received numerous awards for journalistic excellence, including recognition from 
                 international press organizations for our coverage of major events in Nepal's history. Our investigative 
                 reporting has led to significant policy changes and greater government accountability.
               </p>
@@ -79,7 +77,7 @@ const About = () => {
                   <Calendar className="text-red-600" size={20} />
                   <div>
                     <div className="font-semibold">Founded</div>
-                    <div className="text-gray-600">1993</div>
+                    <div className="text-gray-600">2065 B.S</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -93,14 +91,14 @@ const About = () => {
                   <Award className="text-red-600" size={20} />
                   <div>
                     <div className="font-semibold">Language</div>
-                    <div className="text-gray-600">English</div>
+                    <div className="text-gray-600">Tharu/Nepali</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <Users className="text-red-600" size={20} />
                   <div>
                     <div className="font-semibold">Daily Readership</div>
-                    <div className="text-gray-600">500,000+</div>
+                    <div className="text-gray-600">5000+</div>
                   </div>
                 </div>
               </div>
@@ -109,7 +107,7 @@ const About = () => {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-xl font-bold text-red-600 mb-4">Our Team</h3>
               <p className="text-gray-600 mb-4">
-                Meet the dedicated professionals who make The Kathmandu Post possible.
+                Meet the dedicated professionals who make The Gurbaba F.M possible.
               </p>
               <Link 
                 to="/staff" 
@@ -129,11 +127,11 @@ const About = () => {
             <div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Editorial Office</h3>
               <div className="text-gray-700 space-y-2">
-                <p>Kantipath, Kathmandu</p>
+                <p>Bansghadi, Bardiya</p>
                 <p>P.O. Box 8559</p>
-                <p>Kathmandu, Nepal</p>
+                <p>Bardiya, Nepal</p>
                 <p>Phone: +977-1-4270774</p>
-                <p>Email: editor@kathmandupost.com</p>
+                <p>Email: editor@Gurababa.com</p>
               </div>
             </div>
             <div>
@@ -141,7 +139,7 @@ const About = () => {
               <div className="text-gray-700 space-y-2">
                 <p>For advertising inquiries and rates</p>
                 <p>Phone: +977-1-4270051</p>
-                <p>Email: ads@kathmandupost.com</p>
+                <p>Email: ads@Gurababa.com</p>
               </div>
             </div>
           </div>

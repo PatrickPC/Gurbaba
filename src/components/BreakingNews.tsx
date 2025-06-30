@@ -1,8 +1,14 @@
 
 import { useState, useEffect } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
+
+
 
 const BreakingNews = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { t } = useLanguage();
+
+
   
   const breakingNews = [
     "BRI implementation",
@@ -25,7 +31,9 @@ const BreakingNews = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center">
           <span className="bg-white text-red-600 px-3 py-1 text-sm font-bold mr-4 flex-shrink-0">
-            WHAT'S NEWS:
+            {t('header.whatsNews')}
+
+
           </span>
           <div className="flex-1 overflow-hidden">
             <div 
