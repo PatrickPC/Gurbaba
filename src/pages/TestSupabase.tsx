@@ -1,6 +1,6 @@
 // pages/TestSupabase.tsx (if using React)
 import { useEffect } from 'react';
-import { supabase } from '../integrations/supabase/Client';
+import { supabase } from '../integrations/supabase/client';
 
 export default function TestSupabase() {
   useEffect(() => {
