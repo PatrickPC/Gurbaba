@@ -1,25 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BreakingNews from '../components/BreakingNews';
 import NewsCard from '../components/NewsCard';
+import VideoSection from '../components/VideoSection';
 import { mockNews } from '../data/mockNews';
+import { useNews } from '../contexts/NewsContext';
+import { getPublishedDate } from '../utils/newsHelpers';
 
 const Index = () => {
-  const [featuredNews] = useState(mockNews[0]);
-  const [mainNews] = useState(mockNews.slice(1, 4));
-  const [sidebarNews] = useState(mockNews.filter(news => news.category === 'Opinion'));
+  const { articles, loading } = useNews();
+  
+  // Use database articles if available, fallback to mock data
+  const allNews = articles.length > 0 ? articles : mockNews;
+  const displayFeaturedNews = articles.length > 0 ? articles[0] : mockNews[0];
+  const displayMainNews = articles.length > 1 ? articles.slice(1, 4) : mockNews.slice(1, 4);
+
+  // Get Opinion articles from database first, then fallback to mock data
+  const sidebarNews = articles.filter(news => news.category === 'Opinion').length > 0 
+    ? articles.filter(news => news.category === 'Opinion')
+    : mockNews.filter(news => news.category === 'Opinion');
 
   const categoryNews = {
-    Politics: mockNews.filter(news => news.category === 'Politics'),
-    Sports: mockNews.filter(news => news.category === 'Sports'),
-    Money: mockNews.filter(news => news.category === 'Money'),
-    'Science & Technology': mockNews.filter(news => news.category === 'Science & Technology'),
-    World: mockNews.filter(news => news.category === 'World'),
-    Features: mockNews.filter(news => news.category === 'Features'),
-    Columns: mockNews.filter(news => news.category === 'Columns'),
-    Editorial: mockNews.filter(news => news.category === 'Editorial'),
-    Interviews: mockNews.filter(news => news.category === 'Interviews')
+    Politics: allNews.filter(news => news.category === 'Politics'),
+    Sports: allNews.filter(news => news.category === 'Sports'),
+    Money: allNews.filter(news => news.category === 'Money'),
+    'Science & Technology': allNews.filter(news => news.category === 'Science & Technology'),
+    World: allNews.filter(news => news.category === 'World'),
+    Features: allNews.filter(news => news.category === 'Features'),
+    Columns: allNews.filter(news => news.category === 'Columns'),
+    Editorial: allNews.filter(news => news.category === 'Editorial'),
+    Interviews: allNews.filter(news => news.category === 'Interviews')
   };
 
   const weatherData = [
@@ -29,6 +40,20 @@ const Index = () => {
     { date: "Today's weather: June 12, 2025", temp: "19.8°C" },
     { date: "Today's weather: June 11, 2025", temp: "23.2°C" }
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <p className="text-gray-600">Loading news articles...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -41,7 +66,7 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Featured Story */}
             <div className="lg:col-span-2">
-              <NewsCard key={featuredNews.id} {...featuredNews} featured={true} />
+              <NewsCard {...displayFeaturedNews} featured={true} />
             </div>
             
             {/* Sidebar News */}
@@ -61,6 +86,9 @@ const Index = () => {
                     <p className="text-gray-600 text-sm line-clamp-3">{news.excerpt}</p>
                   </div>
                 ))}
+                {sidebarNews.length === 0 && (
+                  <p className="text-gray-500 text-sm">No opinion articles available.</p>
+                )}
               </div>
             </div>
           </div>
@@ -69,11 +97,25 @@ const Index = () => {
         {/* Main News Grid */}
         <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mainNews.map((news) => (
+            {displayMainNews.map((news) => (
               <NewsCard key={news.id} {...news} />
             ))}
           </div>
         </section>
+
+        {/* Show Database Articles - Moved here above category sections */}
+        {articles.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-red-600 mb-6 border-b-2 border-red-600 pb-2">
+              LATEST NEWS ({articles.length} articles)
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {articles.slice(0, 6).map((news) => (
+                <NewsCard key={news.id} {...news} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Four Column Category Sections */}
         <section className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
@@ -318,7 +360,7 @@ const Index = () => {
                         </h3>
                         <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
                         <div className="text-xs text-gray-500 mt-1">
-                          By {article.author} • {article.publishedAt}
+                          By {article.author} • {getPublishedDate(article)}
                         </div>
                       </div>
                     </div>
@@ -328,6 +370,9 @@ const Index = () => {
             )
           ))}
         </section>
+
+        {/* Video News Section - Moved to Bottom */}
+        <VideoSection />
       </main>
 
       <Footer />

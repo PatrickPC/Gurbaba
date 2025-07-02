@@ -1,118 +1,61 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Eye, EyeOff, Lock, User } from 'lucide-react';
-import { useToast } from '../hooks/use-toast';
+import { Home } from 'lucide-react';
+import AdminSecurityGate from '../components/AdminSecurityGate';
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    // Simple authentication check (in real app, this would be API call)
-    if (credentials.username === 'admin' && credentials.password === 'admin123') {
-      localStorage.setItem('isAdminAuthenticated', 'true');
-      toast({
-        title: "Login Successful",
-        description: "Welcome to the admin panel!",
-      });
-      navigate('/admin');
-    } else {
-      toast({
-        title: "Login Failed",
-        description: "Invalid username or password",
-        variant: "destructive",
-      });
-    }
+  useEffect(() => {
+    // Check if user is already authenticated and session is valid
+    const auth = localStorage.getItem('isAdminAuthenticated');
+    const expiry = localStorage.getItem('adminAuthExpiry');
     
-    setIsLoading(false);
+    if (auth === 'true' && expiry) {
+      const expiryTime = parseInt(expiry);
+      if (Date.now() < expiryTime) {
+        setIsAuthenticated(true);
+        navigate('/admin');
+      } else {
+        // Session expired, clear authentication
+        localStorage.removeItem('isAdminAuthenticated');
+        localStorage.removeItem('adminAuthExpiry');
+        localStorage.removeItem('adminLoginTime');
+      }
+    }
+  }, [navigate]);
+
+  const handleAccessGranted = () => {
+    setIsAuthenticated(true);
+    navigate('/admin');
   };
 
+  if (isAuthenticated) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Redirecting to admin panel...</p>
+      </div>
+    </div>;
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Admin Login
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to access the admin panel
-          </p>
-        </div>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>The Kathmandu Post</CardTitle>
-            <CardDescription>Admin Dashboard Access</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div>
-                <Label htmlFor="username">Username</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="username"
-                    type="text"
-                    required
-                    className="pl-10"
-                    placeholder="Enter username"
-                    value={credentials.username}
-                    onChange={(e) => setCredentials({...credentials, username: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    className="pl-10 pr-10"
-                    placeholder="Enter password"
-                    value={credentials.password}
-                    onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-3"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
-                  </button>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-red-600 hover:bg-red-700"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Signing in...' : 'Sign In'}
-              </Button>
-            </form>
-            
-            <div className="mt-4 text-sm text-gray-600 text-center">
-              Demo credentials: admin / admin123
-            </div>
-          </CardContent>
-        </Card>
+    <div className="relative">
+      <AdminSecurityGate onAccessGranted={handleAccessGranted} />
+      
+      {/* Back to homepage button */}
+      <div className="fixed top-6 left-6 z-50">
+        <Button
+          variant="outline"
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+        >
+          <Home size={16} />
+          Back to Homepage
+        </Button>
       </div>
     </div>
   );

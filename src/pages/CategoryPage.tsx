@@ -1,18 +1,43 @@
-import { useState } from 'react';
+
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import NewsCard from '../components/NewsCard';
 import { mockNews } from '../data/mockNews';
+import { useNews } from '../contexts/NewsContext';
 
 const CategoryPage = () => {
   const { category } = useParams();
+  const { articles, loading, getArticlesByCategory } = useNews();
+  
+  // Clean up category name for display
   const categoryName = category?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || '';
   
-  const categoryNews = mockNews.filter(news => 
-    news.category.toLowerCase().replace(' & ', '-').replace(' ', '-') === category
-  );
+  // Get articles from database first, fallback to mock news
+  const databaseCategoryNews = getArticlesByCategory(category || '');
+  const mockCategoryNews = mockNews.filter(news => {
+    const newsCategory = news.category.toLowerCase().replace(' & ', '-').replace(' ', '-');
+    const urlCategory = category?.toLowerCase();
+    return newsCategory === urlCategory || news.category.toLowerCase() === categoryName.toLowerCase();
+  });
+  
+  // Use database articles if available, otherwise use mock data
+  const categoryNews = databaseCategoryNews.length > 0 ? databaseCategoryNews : mockCategoryNews;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <p className="text-gray-600">Loading articles...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -35,13 +60,25 @@ const CategoryPage = () => {
           <p className="text-gray-600">
             Latest news and updates in {categoryName.toLowerCase()}
           </p>
+          <div className="text-sm text-gray-500 mt-2">
+            Database articles: {databaseCategoryNews.length} | Mock articles: {mockCategoryNews.length} | Total showing: {categoryNews.length}
+          </div>
         </div>
 
         {/* News Grid */}
         {categoryNews.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categoryNews.map((news) => (
-              <NewsCard {...news} key={news.id} />
+              <NewsCard 
+                key={news.id} 
+                id={news.id}
+                title={news.title}
+                excerpt={news.excerpt}
+                image={news.image}
+                author={news.author}
+                publishedAt={'publishedAt' in news ? news.publishedAt : undefined}
+                category={news.category}
+              />
             ))}
           </div>
         ) : (
@@ -49,6 +86,9 @@ const CategoryPage = () => {
             <h2 className="text-2xl font-semibold text-gray-600 mb-4">
               No articles found in this category
             </h2>
+            <p className="text-gray-500 mb-4">
+              Category: {categoryName} | URL Parameter: {category}
+            </p>
             <Link to="/" className="text-red-600 hover:underline">
               Return to homepage
             </Link>
