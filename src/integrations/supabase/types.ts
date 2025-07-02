@@ -9,7 +9,87 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      news_articles: {
+        Row: {
+          author: string
+          category: string
+          content: string
+          excerpt: string
+          id: string
+          image: string | null
+          published_at: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author: string
+          category: string
+          content: string
+          excerpt: string
+          id?: string
+          image?: string | null
+          published_at?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          category?: string
+          content?: string
+          excerpt?: string
+          id?: string
+          image?: string | null
+          published_at?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      videos: {
+        Row: {
+          author: string
+          category: string
+          created_at: string
+          description: string | null
+          duration: string | null
+          id: string
+          tags: string[] | null
+          thumbnail: string | null
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          author: string
+          category: string
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          tags?: string[] | null
+          thumbnail?: string | null
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          author?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          tags?: string[] | null
+          thumbnail?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

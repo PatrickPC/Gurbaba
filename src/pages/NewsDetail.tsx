@@ -4,11 +4,37 @@ import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark } fro
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { mockNews } from '../data/mockNews';
+import { useNews } from '../contexts/NewsContext';
+import { getPublishedDate, getReadTime } from '../utils/newsHelpers';
 
 const NewsDetail = () => {
   const { id } = useParams();
-  const article = mockNews.find(news => news.id === id);
-  const relatedNews = mockNews.filter(news => news.id !== id && news.category === article?.category).slice(0, 6);
+  const { getArticleById, articles, loading } = useNews();
+  
+  // Try to get article from database first, fallback to mock data
+  const databaseArticle = getArticleById(id || '');
+  const mockArticle = mockNews.find(news => news.id === id);
+  const article = databaseArticle || mockArticle;
+  
+  // Get related news from the same category
+  const allNews = articles.length > 0 ? articles : mockNews;
+  const relatedNews = allNews.filter(news => 
+    news.id !== id && news.category === article?.category
+  ).slice(0, 6);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <p className="text-gray-600">Loading article...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!article) {
     return (
@@ -24,6 +50,9 @@ const NewsDetail = () => {
       </div>
     );
   }
+
+  const publishedDate = getPublishedDate(article);
+  const readTime = getReadTime(article);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,16 +94,13 @@ const NewsDetail = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock size={16} />
-                    <span>Published at: {article.publishedAt}</span>
+                    <span>Published: {publishedDate}</span>
                   </div>
-                  {article.updatedAt && (
+                  {readTime && (
                     <div className="flex items-center gap-2">
                       <Clock size={16} />
-                      <span>Updated at: {article.updatedAt}</span>
+                      <span>{readTime}</span>
                     </div>
-                  )}
-                  {article.location && (
-                    <span>📍 {article.location}</span>
                   )}
                 </div>
                 
@@ -114,9 +140,9 @@ const NewsDetail = () => {
               {/* Tags */}
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex flex-wrap gap-2">
-                  {article.tags.map((tag) => (
+                  {(article.tags || []).map((tag, index) => (
                     <span
-                      key={tag}
+                      key={index}
                       className="bg-gray-100 text-gray-700 px-3 py-1 text-sm rounded-full hover:bg-gray-200 transition-colors"
                     >
                       #{tag}
@@ -167,7 +193,7 @@ const NewsDetail = () => {
                           {news.title}
                         </h3>
                         <div className="text-xs text-gray-500">
-                          {news.publishedAt}
+                          {getPublishedDate(news)}
                         </div>
                       </div>
                     </div>
@@ -202,7 +228,7 @@ const NewsDetail = () => {
                     {news.excerpt}
                   </p>
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{news.publishedAt}</span>
+                    <span>{getPublishedDate(news)}</span>
                     <span className="bg-gray-100 px-2 py-1 rounded">
                       {news.category}
                     </span>

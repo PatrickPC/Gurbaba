@@ -76,8 +76,10 @@ const CategoryPage = () => {
                 excerpt={news.excerpt}
                 image={news.image}
                 author={news.author}
+                published_at={'published_at' in news ? news.published_at : undefined}
                 publishedAt={'publishedAt' in news ? news.publishedAt : undefined}
                 category={news.category}
+                readTime={'readTime' in news ? news.readTime : undefined}
               />
             ))}
           </div>
