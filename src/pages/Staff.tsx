@@ -16,7 +16,7 @@ const Staff = () => {
       phone: "+977-9858027130",
       joinDate: "2018",
       bio: "Veteran journalist with over 15 years of experience in print and digital media.",
-      image: "https://www.radiogurbaba.org.np/uploads/news/images/416622506sss.jpeg",
+      image: "src/images/ekraj.jpeg",
     },
     {
       id: 2,
