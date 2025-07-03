@@ -144,7 +144,7 @@ const AdminManage = () => {
                 <Shield className="text-red-600" size={20} />
                 Admin Panel - Manage Articles
               </h1>
-              <p className="text-sm text-gray-500">The Kathmandu Post</p>
+              <p className="text-sm text-gray-500">The Gurbaba Post</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">

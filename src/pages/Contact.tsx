@@ -29,17 +29,17 @@ const Contact = () => {
         <nav className="mb-6">
           <Link to="/" className="flex items-center text-gray-600 hover:text-red-600 transition-colors">
             <ArrowLeft size={20} className="mr-2" />
-            {t('contact.backToHome')}
+            {t('BackToHome')}
           </Link>
         </nav>
 
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            {t('contact.title')}
+            {t('Contact Us')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t('contact.subtitle')}
+            {t('You can contact us using following details us visit our office on open hours')}
           </p>
         </div>
 
@@ -50,22 +50,22 @@ const Contact = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="text-red-600" size={24} />
-                  {t('contact.ourOffice')}
+                  {t('Contact our Office')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900">{t('contact.headOffice')}</h3>
+                  <h3 className="font-semibold text-gray-900">{t(' Head Office')}</h3>
                   <p className="text-gray-600">
-                    Kantipath, Kathmandu 44600<br />
+                    Bansghadi, Bardiya 21800<br />
                     Nepal
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{t('contact.postalAddress')}</h3>
+                  <h3 className="font-semibold text-gray-900">{t(' Postal Address')}</h3>
                   <p className="text-gray-600">
-                    GPO Box 8975, EPC 696<br />
-                    Kathmandu, Nepal
+                    GPO Box 21803, EPC 21800<br />
+                    Bardiya, Nepal
                   </p>
                 </div>
               </CardContent>
@@ -75,26 +75,23 @@ const Contact = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Phone className="text-red-600" size={24} />
-                  {t('contact.phoneNumbers')}
+                  {t('Phone Numbers')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div>
-                  <span className="font-semibold">{t('contact.mainOffice')}</span>
-                  <span className="ml-2 text-gray-600">+977-1-4270774</span>
+                  <span className="font-semibold">{t(' Main Office:')}</span>
+                  <span className="ml-2 text-gray-600">084-400004/084-400003</span>
                 </div>
                 <div>
-                  <span className="font-semibold">{t('contact.newsroom')}</span>
-                  <span className="ml-2 text-gray-600">+977-1-4270775</span>
+                  <span className="font-semibold">{t(' Newsroom:')}</span>
+                  <span className="ml-2 text-gray-600">084-400004/084-400003</span>
                 </div>
                 <div>
-                  <span className="font-semibold">{t('contact.advertising')}</span>
-                  <span className="ml-2 text-gray-600">+977-1-4270776</span>
+                  <span className="font-semibold">{t(' Advertising:')}</span>
+                  <span className="ml-2 text-gray-600">084-400004/084-400003</span>
                 </div>
-                <div>
-                  <span className="font-semibold">{t('contact.circulation')}</span>
-                  <span className="ml-2 text-gray-600">+977-1-4270777</span>
-                </div>
+               
               </CardContent>
             </Card>
 
@@ -102,25 +99,25 @@ const Contact = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Mail className="text-red-600" size={24} />
-                  {t('contact.emailAddresses')}
+                  {t('Email Addresses')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div>
-                  <span className="font-semibold">{t('contact.generalInquiries')}</span>
-                  <span className="ml-2 text-gray-600">info@kathmandupost.com</span>
+                  <span className="font-semibold">{t(' GeneralInquiries:')}</span>
+                  <span className="ml-2 text-gray-600">info@radiogurbaba.com</span>
                 </div>
                 <div>
-                  <span className="font-semibold">{t('contact.editorial')}</span>
-                  <span className="ml-2 text-gray-600">editor@kathmandupost.com</span>
+                  <span className="font-semibold">{t(' Editorial:')}</span>
+                  <span className="ml-2 text-gray-600">editor@radiogurbaba.com</span>
                 </div>
                 <div>
-                  <span className="font-semibold">{t('contact.newsTips')}</span>
-                  <span className="ml-2 text-gray-600">news@kathmandupost.com</span>
+                  <span className="font-semibold">{t(' NewsTips:')}</span>
+                  <span className="ml-2 text-gray-600">news@radiogurbaba.com</span>
                 </div>
                 <div>
-                  <span className="font-semibold">{t('contact.advertising')}</span>
-                  <span className="ml-2 text-gray-600">ads@kathmandupost.com</span>
+                  <span className="font-semibold">{t(' Advertising:')}</span>
+                  <span className="ml-2 text-gray-600">ads@radiogurbaba.com</span>
                 </div>
               </CardContent>
             </Card>
@@ -129,23 +126,20 @@ const Contact = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="text-red-600" size={24} />
-                  {t('contact.officeHours')}
+                  {t('Office Hours')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <div>
-                    <span className="font-semibold">{t('contact.mondayFriday')}</span>
+                    <span className="font-semibold">{t('Contact Sunday-Friday')}</span>
                     <span className="ml-2 text-gray-600">9:00 AM - 6:00 PM</span>
                   </div>
                   <div>
-                    <span className="font-semibold">{t('contact.saturday')}</span>
+                    <span className="font-semibold">{t('Contact Saturday')}</span>
                     <span className="ml-2 text-gray-600">10:00 AM - 4:00 PM</span>
                   </div>
-                  <div>
-                    <span className="font-semibold">{t('contact.sunday')}</span>
-                    <span className="ml-2 text-gray-600">{t('contact.closed')}</span>
-                  </div>
+                 
                 </div>
               </CardContent>
             </Card>
@@ -155,51 +149,51 @@ const Contact = () => {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle>{t('contact.sendMessage')}</CardTitle>
+                <CardTitle>{t('Send Message')}</CardTitle>
                 <p className="text-gray-600">
-                  {t('contact.messageDesc')}
+                  {t('Have a question or story tip? We would love to hear from you.')}
                 </p>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="firstName">{t('contact.firstName')}</Label>
+                      <Label htmlFor="firstName">{t('FirstName')}</Label>
                       <Input id="firstName" type="text" required />
                     </div>
                     <div>
-                      <Label htmlFor="lastName">{t('contact.lastName')}</Label>
+                      <Label htmlFor="lastName">{t('LastName')}</Label>
                       <Input id="lastName" type="text" required />
                     </div>
                   </div>
                   
                   <div>
-                    <Label htmlFor="email">{t('contact.email')}</Label>
+                    <Label htmlFor="email">{t('Email')}</Label>
                     <Input id="email" type="email" required />
                   </div>
                   
                   <div>
-                    <Label htmlFor="phone">{t('contact.phone')}</Label>
+                    <Label htmlFor="phone">{t('Phone')}</Label>
                     <Input id="phone" type="tel" />
                   </div>
                   
                   <div>
-                    <Label htmlFor="subject">{t('contact.subject')}</Label>
+                    <Label htmlFor="subject">{t('Subject')}</Label>
                     <Input id="subject" type="text" required />
                   </div>
                   
                   <div>
-                    <Label htmlFor="message">{t('contact.message')}</Label>
+                    <Label htmlFor="message">{t('Message')}</Label>
                     <Textarea 
                       id="message" 
                       rows={6} 
-                      placeholder={t('contact.messagePlaceholder')}
+                      placeholder={t('Message Placeholder')}
                       required 
                     />
                   </div>
                   
                   <Button type="submit" className="w-full bg-red-600 hover:bg-red-700">
-                    {t('contact.sendBtn')}
+                    {t('Send')}
                   </Button>
                 </form>
               </CardContent>
@@ -208,20 +202,20 @@ const Contact = () => {
             {/* Additional Information */}
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>{t('contact.mediaInquiries')}</CardTitle>
+                <CardTitle>{t('Media Inquiries')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">
-                  {t('contact.mediaDesc')}
+                  {t('For press releases, media partnerships, or interview requests, please contact our media relations team directly.')}
                 </p>
                 <div className="space-y-2">
                   <div>
-                    <span className="font-semibold">{t('contact.mediaRelations')}</span>
-                    <span className="ml-2 text-gray-600">media@kathmandupost.com</span>
+                    <span className="font-semibold">{t('Media Relations')}</span>
+                    <span className="ml-2 text-gray-600">media@radiogurbaba.com</span>
                   </div>
                   <div>
-                    <span className="font-semibold">{t('contact.directLine')}</span>
-                    <span className="ml-2 text-gray-600">+977-1-4270778</span>
+                    <span className="font-semibold">{t('Direct Line')}</span>
+                    <span className="ml-2 text-gray-600">084-400004/084-400003</span>
                   </div>
                 </div>
               </CardContent>
@@ -235,10 +229,10 @@ const Contact = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="text-red-600" size={24} />
-                {t('contact.findUs')}
+                {t('Find Us')}
               </CardTitle>
               <p className="text-gray-600">
-                {t('contact.visitOffice')}
+                {t('Visit our office in the heart of Bansghadi')}
               </p>
             </CardHeader>
             <CardContent>

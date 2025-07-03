@@ -33,13 +33,7 @@ const Index = () => {
     Interviews: allNews.filter(news => news.category === 'Interviews')
   };
 
-  const weatherData = [
-    { date: "Today's weather: June 15, 2025", temp: "21.8°C" },
-    { date: "Today's weather: June 14, 2025", temp: "22.1°C" },
-    { date: "Today's weather: June 13, 2025", temp: "20.5°C" },
-    { date: "Today's weather: June 12, 2025", temp: "19.8°C" },
-    { date: "Today's weather: June 11, 2025", temp: "23.2°C" }
-  ];
+ 
 
   if (loading) {
     return (
@@ -312,25 +306,43 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Weather */}
+          {/* Politics - Replaced Weather section */}
+
+
           <div>
             <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
-              WEATHER
+              POLITICS
             </h2>
             <div className="space-y-4">
-              <div className="bg-gradient-to-br from-blue-400 to-blue-600 text-white p-4 rounded">
-                <img
-                  src="https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800"
-                  alt="Weather"
-                  className="w-full h-32 object-cover rounded mb-3"
-                />
-                <h3 className="font-semibold mb-2">Today's weather: June 15, 2025</h3>
-              </div>
-              <div className="space-y-2">
-                {weatherData.slice(1).map((weather, index) => (
-                  <p key={index} className="text-sm text-gray-700">{weather.date}</p>
-                ))}
-              </div>
+            {categoryNews.Politics.slice(0, 1).map((article) => (
+                <div key={article.id} className="group">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
+                  />
+                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
+                </div>
+              ))}
+              {categoryNews.Politics.slice(1, 4).map((article) => (
+                <div key={article.id} className="group">
+                  <h3 className="font-medium text-gray-900 mb-1 group-hover:text-red-600 transition-colors">
+                    <a href={`/news/${article.id}`}>{article.title}</a>
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
+                </div>
+              ))}
+              {categoryNews.Politics.length === 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-700">Coalition government stability discussions</p>
+                  <p className="text-sm text-gray-700">Parliamentary session updates</p>
+                  <p className="text-sm text-gray-700">Provincial assembly proceedings</p>
+                  <p className="text-sm text-gray-700">Political party merger talks</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
