@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/Client';
 import { useToast } from './use-toast';
 
 export interface NewsArticle {

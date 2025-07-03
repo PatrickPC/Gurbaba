@@ -438,7 +438,7 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-       { <VideoUploadForm /> }
+        <VideoUploadForm />
       </main>
     </div>
   );
