@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { LogOut, Upload, Eye, Home, Clock, Shield } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { useNews } from '../contexts/NewsContext';
-import { supabase } from '../integrations/supabase/client';
+import { supabase } from '../integrations/supabase/Client';
 import VideoUploadForm from '../components/VideoUploadForm';
 
 const Admin = () => {
