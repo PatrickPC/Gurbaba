@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
@@ -11,6 +12,7 @@ import { useToast } from '../hooks/use-toast';
 import { useNews } from '../contexts/NewsContext';
 import { supabase } from '../integrations/supabase/Client';
 import VideoUploadForm from '../components/VideoUploadForm';
+import BreakingNewsManager from '../components/BreakingNewsManager';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -438,6 +440,7 @@ const Admin = () => {
           </CardContent>
         </Card>
 
+        <BreakingNewsManager />
         <VideoUploadForm />
       </main>
     </div>

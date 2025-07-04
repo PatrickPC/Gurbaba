@@ -1,6 +1,7 @@
-
-import React, { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import { useNewsData, NewsArticle } from '../hooks/useNewsData';
+import React from 'react';
+
 
 interface NewsContextType {
   articles: NewsArticle[];
