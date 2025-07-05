@@ -21,9 +21,9 @@ const Header = () => {
     { key: 'nav.cultureLifestyle', slug: 'culture-lifestyle' },
     { key: 'nav.scienceTech', slug: 'science-technology' },
     { key: 'nav.world', slug: 'world' },
-    { key: 'nav.features', slug: 'features' },
-    { key: 'nav.columns', slug: 'columns' },
-    { key: 'nav.editorial', slug: 'editorial' },
+    { key: 'nav.video', slug: 'video' },
+    { key: 'nav.aboutUs', slug: 'about' },
+    { key: 'nav.contact', slug: 'contact' },
     { key: 'nav.interviews', slug: 'interviews' }
   ];
 
@@ -176,7 +176,8 @@ const Header = () => {
               {categories.map((category) => (
                 <li key={category.key}>
                   <Link 
-                    to={`/category/${category.slug}`}
+                    to={`/${category.slug}`}
+
                     className="block px-3 py-2 text-sm text-gray-700 hover:text-red-600 hover:bg-gray-50 md:hover:bg-transparent transition-colors"
                   >
                     {t(category.key)}
@@ -225,7 +226,8 @@ const Header = () => {
               {categories.map((category) => (
                 <li key={category.key}>
                   <Link 
-                    to={`/category/${category.slug}`}
+                    to={`/${category.slug}`}
+
                     className="block px-2 py-1 text-xs text-gray-700 hover:text-red-600 hover:bg-gray-50 md:hover:bg-transparent transition-colors"
                   >
                     {t(category.key)}

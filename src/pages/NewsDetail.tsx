@@ -1,4 +1,3 @@
-
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark } from 'lucide-react';
 import Header from '../components/Header';

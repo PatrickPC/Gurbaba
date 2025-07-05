@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Users, Award, Globe, Calendar } from 'lucide-react';
 import Header from '../components/Header';

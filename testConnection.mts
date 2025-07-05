@@ -1,6 +1,6 @@
 // testConnection.ts
 
-import { supabase } from './src/integrations/supabase/client'; 
+import { supabase } from './src/integrations/supabase/Client'; 
  
 async function testSupabaseConnection() {
   const { data, error } = await supabase

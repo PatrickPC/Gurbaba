@@ -9,19 +9,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: './',
+  base: './', // ✅ Needed for cPanel/static hosting
   build: {
     outDir: 'dist',
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react')) return 'vendor-react'
-            return 'vendor'
-          }
-        }
-      }
-    },
+    // ❌ Removed manualChunks to avoid runtime errors with React
     chunkSizeWarningLimit: 1000,
   },
 })

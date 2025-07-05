@@ -1,6 +1,5 @@
 import { createContext, useContext, ReactNode } from 'react';
 import { useNewsData, NewsArticle } from '../hooks/useNewsData';
-import React from 'react';
 
 
 interface NewsContextType {
