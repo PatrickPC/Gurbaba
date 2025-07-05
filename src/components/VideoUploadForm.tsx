@@ -36,6 +36,8 @@ const VideoUploadForm = () => {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${folder}/${fileName}`;
 
+      console.log(`Uploading file to bucket: ${bucket}, path: ${filePath}`);
+
       const { data, error } = await supabase.storage
         .from(bucket)
         .upload(filePath, file);
@@ -45,10 +47,13 @@ const VideoUploadForm = () => {
         throw error;
       }
 
+      console.log('Upload successful:', data);
+
       const { data: { publicUrl } } = supabase.storage
         .from(bucket)
         .getPublicUrl(filePath);
 
+      console.log('Public URL:', publicUrl);
       return publicUrl;
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -59,10 +64,10 @@ const VideoUploadForm = () => {
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 100 * 1024 * 1024) { // 100MB limit
+      if (file.size > 500 * 1024 * 1024) { // 500MB limit
         toast({
           title: "File Too Large",
-          description: "Video file must be less than 100MB.",
+          description: "Video file must be less than 500MB.",
           variant: "destructive"
         });
         return;
@@ -115,12 +120,16 @@ const VideoUploadForm = () => {
     setIsUploading(true);
 
     try {
+      console.log('Starting video upload process...');
+      
       // Upload video file
       const videoUrl = await uploadFileToStorage(videoFile, 'videos', 'video-files');
       
       if (!videoUrl) {
         throw new Error('Failed to upload video file');
       }
+
+      console.log('Video uploaded successfully, URL:', videoUrl);
 
       // Convert tags string to array
       const tagsArray = videoForm.tags 
@@ -138,6 +147,8 @@ const VideoUploadForm = () => {
         duration: '00:00'
       };
 
+      console.log('Inserting video data:', videoData);
+
       // Insert video data into database
       const { data, error } = await supabase
         .from('videos')
@@ -145,8 +156,11 @@ const VideoUploadForm = () => {
         .select();
 
       if (error) {
+        console.error('Database insertion error:', error);
         throw error;
       }
+
+      console.log('Video data inserted successfully:', data);
 
       toast({
         title: "Video Published!",
@@ -169,7 +183,7 @@ const VideoUploadForm = () => {
       console.error('Publishing error:', error);
       toast({
         title: "Publishing Failed",
-        description: "There was an error publishing your video. Please try again.",
+        description: `There was an error publishing your video: ${error.message}`,
         variant: "destructive"
       });
     } finally {
