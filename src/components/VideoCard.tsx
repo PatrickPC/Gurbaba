@@ -14,10 +14,20 @@ interface VideoCardProps {
 
 const VideoCard = ({ id, title, thumbnail, duration, author, publishedDate, videoUrl }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const handlePlayVideo = () => {
     setIsPlaying(true);
   };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  // Fallback image if thumbnail is not available or fails to load
+  const displayThumbnail = imageError || !thumbnail 
+    ? 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=800'
+    : thumbnail;
 
   return (
     <div className="group cursor-pointer">
@@ -25,9 +35,10 @@ const VideoCard = ({ id, title, thumbnail, duration, author, publishedDate, vide
         {!isPlaying ? (
           <>
             <img
-              src={thumbnail}
+              src={displayThumbnail}
               alt={title}
               className="w-full h-48 object-cover rounded-lg group-hover:opacity-90 transition-opacity"
+              onError={handleImageError}
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <button
