@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -42,20 +41,16 @@ const VideoUploadForm = () => {
 
       console.log(`Uploading file to bucket: ${bucket}, path: ${filePath}`);
 
-      // Upload without authentication - using public bucket access
-
       const { data, error } = await supabase.storage
         .from(bucket)
-      
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
-         
         });
 
       if (error) {
         console.error('Upload error:', error);
-          throw error;
+        throw error;
       }
 
       console.log('Upload successful:', data);
@@ -76,26 +71,25 @@ const VideoUploadForm = () => {
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 1000 * 1024 * 1024) { // 1GB limit
+      if (file.size > 50 * 1024 * 1024) { // 50MB limit for Supabase
+
         toast({
           title: "File Too Large",
-          description: "Video file must be less than 1GB.",
+          description: "Video file must be less than 50MB. Please compress your video or use a smaller file.",
+
           variant: "destructive"
         });
         return;
       }
 
       setVideoFile(file);
-
-           
+      
       // Create preview URL for local video file
       const previewUrl = URL.createObjectURL(file);
       setVideoPreviewUrl(previewUrl);
       
-
       toast({
         title: "Video Selected",
-     
         description: `Selected video: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`,
       });
     }
@@ -106,7 +100,7 @@ const VideoUploadForm = () => {
     if (file) {
       setThumbnailFile(file);
       setIsUploadingThumbnail(true);
-
+      
       const uploadedUrl = await uploadFileToStorage(file, 'video-thumbnails', 'thumbnails');
       if (uploadedUrl) {
         setVideoForm({...videoForm, thumbnail: uploadedUrl});
@@ -117,7 +111,6 @@ const VideoUploadForm = () => {
       } else {
         toast({
           title: "Upload Failed",
-
           description: "Failed to upload thumbnail. Continuing without thumbnail.",
           variant: "destructive"
         });
@@ -128,7 +121,7 @@ const VideoUploadForm = () => {
 
   const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!videoForm.title || !videoForm.description || !videoForm.author || !videoForm.category || !videoFile) {
       toast({
         title: "Missing Information",
@@ -142,10 +135,10 @@ const VideoUploadForm = () => {
 
     try {
       console.log('Starting video upload process...');
-
+      
       // Upload video file
       const videoUrl = await uploadFileToStorage(videoFile, 'videos', 'video-files');
-
+      
       if (!videoUrl) {
         throw new Error('Failed to upload video file');
       }
@@ -170,7 +163,7 @@ const VideoUploadForm = () => {
 
       console.log('Inserting video data:', videoData);
 
-           // Insert video data into database - try direct insert without auth
+      // Insert video data into database
       const { data, error } = await supabase
         .from('videos')
         .insert([videoData])
@@ -203,15 +196,16 @@ const VideoUploadForm = () => {
       });
       setVideoFile(null);
       setThumbnailFile(null);
+      if (videoPreviewUrl) {
+        URL.revokeObjectURL(videoPreviewUrl);
+      }
       setVideoPreviewUrl(null);
-
-
 
     } catch (error) {
       console.error('Publishing error:', error);
       toast({
         title: "Publishing Failed",
-        description: `There was an error publishing your video: ${error.message}`,
+        description: `There was an error publishing your video: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive"
       });
     } finally {
@@ -220,24 +214,49 @@ const VideoUploadForm = () => {
   };
 
   const handlePreview = () => {
-    
-      if (videoPreviewUrl) {
-        // Create a new window to show the video preview
-        const previewWindow = window.open('', '_blank', 'width=800,height=600');
-        if (previewWindow) {
-          previewWindow.document.write(`
-            <html>
-              <head><title>Video Preview</title></head>
-              <body style="margin: 0; background: black; display: flex; justify-content: center; align-items: center; height: 100vh;">
-                <video controls autoplay style="max-width: 100%; max-height: 100%;">
-                  <source src="${videoPreviewUrl}" type="${videoFile?.type}">
-                  Your browser does not support the video tag.
-                </video>
-              </body>
-            </html>
-          `);
-          previewWindow.document.close();
-        }
+    if (videoPreviewUrl && videoFile) {
+      // Create a new window to show the video preview
+      const previewWindow = window.open('', '_blank', 'width=800,height=600');
+      if (previewWindow) {
+        previewWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Video Preview - ${videoForm.title || videoFile.name}</title>
+              <style>
+                body { 
+                  margin: 0; 
+                  background: #000; 
+                  display: flex; 
+                  flex-direction: column;
+                  justify-content: center; 
+                  align-items: center; 
+                  height: 100vh;
+                  font-family: Arial, sans-serif;
+                }
+                h1 {
+                  color: white;
+                  text-align: center;
+                  margin-bottom: 20px;
+                }
+                video {
+                  max-width: 90%;
+                  max-height: 70%;
+                  border-radius: 8px;
+                }
+              </style>
+            </head>
+            <body>
+              <h1>${videoForm.title || videoFile.name}</h1>
+              <video controls autoplay>
+                <source src="${videoPreviewUrl}" type="${videoFile.type}">
+                Your browser does not support the video tag.
+              </video>
+            </body>
+          </html>
+        `);
+        previewWindow.document.close();
+      }
     } else {
       toast({
         title: "No Video Selected",
@@ -246,6 +265,15 @@ const VideoUploadForm = () => {
       });
     }
   };
+
+  // Clean up object URL when component unmounts
+  React.useEffect(() => {
+    return () => {
+      if (videoPreviewUrl) {
+        URL.revokeObjectURL(videoPreviewUrl);
+      }
+    };
+  }, [videoPreviewUrl]);
 
   return (
     <Card className="mt-8">
