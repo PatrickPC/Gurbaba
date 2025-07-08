@@ -24,6 +24,7 @@ const VideoUploadForm = () => {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -40,18 +41,35 @@ const VideoUploadForm = () => {
 
       console.log(`Uploading file to bucket: ${bucket}, path: ${filePath}`);
 
-      // Try to upload the file
+      // Upload without authentication - using public bucket access
+
       const { data, error } = await supabase.storage
         .from(bucket)
       
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: true,
+          duplex: 'half'
         });
 
       if (error) {
         console.error('Upload error:', error);
-        throw error;
+           // Try alternative upload method if first fails
+           const { data: retryData, error: retryError } = await fetch(
+            `${supabase.supabaseUrl}/storage/v1/object/${bucket}/${filePath}`,
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${supabase.supabaseKey}`,
+                'Content-Type': file.type,
+              },
+              body: file,
+            }
+          );
+  
+          if (!retryData.ok) {
+            throw new Error(`Upload failed: ${retryError || 'Unknown error'}`);
+          }
       }
 
       console.log('Upload successful:', data);
@@ -82,6 +100,13 @@ const VideoUploadForm = () => {
       }
 
       setVideoFile(file);
+
+           
+      // Create preview URL for local video file
+      const previewUrl = URL.createObjectURL(file);
+      setVideoPreviewUrl(previewUrl);
+      
+
       toast({
         title: "Video Selected",
      
@@ -106,7 +131,8 @@ const VideoUploadForm = () => {
       } else {
         toast({
           title: "Upload Failed",
-          description: "Failed to upload thumbnail. Please try again.",
+
+          description: "Failed to upload thumbnail. Continuing without thumbnail.",
           variant: "destructive"
         });
       }
@@ -158,7 +184,7 @@ const VideoUploadForm = () => {
 
       console.log('Inserting video data:', videoData);
 
-      // Insert video data into database
+           // Insert video data into database - try direct insert without auth
       const { data, error } = await supabase
         .from('videos')
         .insert([videoData])
@@ -191,6 +217,9 @@ const VideoUploadForm = () => {
       });
       setVideoFile(null);
       setThumbnailFile(null);
+      setVideoPreviewUrl(null);
+
+
 
     } catch (error) {
       console.error('Publishing error:', error);
@@ -205,9 +234,24 @@ const VideoUploadForm = () => {
   };
 
   const handlePreview = () => {
-    if (videoFile) {
-      const videoUrl = URL.createObjectURL(videoFile);
-      window.open(videoUrl, '_blank');
+    
+      if (videoPreviewUrl) {
+        // Create a new window to show the video preview
+        const previewWindow = window.open('', '_blank', 'width=800,height=600');
+        if (previewWindow) {
+          previewWindow.document.write(`
+            <html>
+              <head><title>Video Preview</title></head>
+              <body style="margin: 0; background: black; display: flex; justify-content: center; align-items: center; height: 100vh;">
+                <video controls autoplay style="max-width: 100%; max-height: 100%;">
+                  <source src="${videoPreviewUrl}" type="${videoFile?.type}">
+                  Your browser does not support the video tag.
+                </video>
+              </body>
+            </html>
+          `);
+          previewWindow.document.close();
+        }
     } else {
       toast({
         title: "No Video Selected",
