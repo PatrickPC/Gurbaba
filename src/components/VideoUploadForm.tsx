@@ -48,28 +48,13 @@ const VideoUploadForm = () => {
       
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: true,
-          duplex: 'half'
+          upsert: true
+         
         });
 
       if (error) {
         console.error('Upload error:', error);
-           // Try alternative upload method if first fails
-           const { data: retryData, error: retryError } = await fetch(
-            `${supabase.supabaseUrl}/storage/v1/object/${bucket}/${filePath}`,
-            {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${supabase.supabaseKey}`,
-                'Content-Type': file.type,
-              },
-              body: file,
-            }
-          );
-  
-          if (!retryData.ok) {
-            throw new Error(`Upload failed: ${retryError || 'Unknown error'}`);
-          }
+          throw error;
       }
 
       console.log('Upload successful:', data);
