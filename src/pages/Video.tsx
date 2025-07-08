@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import VideoCard from '../components/VideoCard';
-import { supabase } from '../integrations/supabase/client';
+import { supabase } from '../integrations/supabase/Client';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Video = () => {

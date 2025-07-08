@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Upload, Video, Eye } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { supabase } from '../integrations/supabase/Client';
+import { useQueryClient } from '@tanstack/react-query';
 
 const VideoUploadForm = () => {
   const [videoForm, setVideoForm] = useState({
@@ -23,7 +24,9 @@ const VideoUploadForm = () => {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const categories = [
     'News Report', 'Interview', 'Documentary', 'Sports', 'Entertainment', 
@@ -40,7 +43,10 @@ const VideoUploadForm = () => {
 
       const { data, error } = await supabase.storage
         .from(bucket)
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (error) {
         console.error('Upload error:', error);
@@ -49,6 +55,7 @@ const VideoUploadForm = () => {
 
       console.log('Upload successful:', data);
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from(bucket)
         .getPublicUrl(filePath);
@@ -64,19 +71,24 @@ const VideoUploadForm = () => {
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 500 * 1024 * 1024) { // 500MB limit
+      if (file.size > 200 * 1024 * 1024) { // 200MB limit for larger videos
         toast({
           title: "File Too Large",
-          description: "Video file must be less than 500MB.",
+          description: "Video file must be less than 200MB. Please compress your video or use a smaller file.",
           variant: "destructive"
         });
         return;
       }
 
       setVideoFile(file);
+      
+      // Create preview URL for local video file
+      const previewUrl = URL.createObjectURL(file);
+      setVideoPreviewUrl(previewUrl);
+      
       toast({
         title: "Video Selected",
-        description: `Selected video: ${file.name}`,
+        description: `Selected video: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`,
       });
     }
   };
@@ -97,7 +109,7 @@ const VideoUploadForm = () => {
       } else {
         toast({
           title: "Upload Failed",
-          description: "Failed to upload thumbnail. Please try again.",
+          description: "Failed to upload thumbnail. Continuing without thumbnail.",
           variant: "destructive"
         });
       }
@@ -162,9 +174,13 @@ const VideoUploadForm = () => {
 
       console.log('Video data inserted successfully:', data);
 
+      // Invalidate and refetch video queries to show new video immediately
+      queryClient.invalidateQueries({ queryKey: ['videos'] });
+      queryClient.invalidateQueries({ queryKey: ['videos-homepage'] });
+
       toast({
         title: "Video Published!",
-        description: "Your video has been uploaded and published successfully.",
+        description: "Your video has been uploaded and published successfully. It will now appear on the homepage and video page.",
       });
 
       // Reset form
@@ -178,12 +194,16 @@ const VideoUploadForm = () => {
       });
       setVideoFile(null);
       setThumbnailFile(null);
+      if (videoPreviewUrl) {
+        URL.revokeObjectURL(videoPreviewUrl);
+      }
+      setVideoPreviewUrl(null);
 
     } catch (error) {
       console.error('Publishing error:', error);
       toast({
         title: "Publishing Failed",
-        description: `There was an error publishing your video: ${error.message}`,
+        description: `There was an error publishing your video: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive"
       });
     } finally {
@@ -192,9 +212,49 @@ const VideoUploadForm = () => {
   };
 
   const handlePreview = () => {
-    if (videoFile) {
-      const videoUrl = URL.createObjectURL(videoFile);
-      window.open(videoUrl, '_blank');
+    if (videoPreviewUrl && videoFile) {
+      // Create a new window to show the video preview
+      const previewWindow = window.open('', '_blank', 'width=800,height=600');
+      if (previewWindow) {
+        previewWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Video Preview - ${videoForm.title || videoFile.name}</title>
+              <style>
+                body { 
+                  margin: 0; 
+                  background: #000; 
+                  display: flex; 
+                  flex-direction: column;
+                  justify-content: center; 
+                  align-items: center; 
+                  height: 100vh;
+                  font-family: Arial, sans-serif;
+                }
+                h1 {
+                  color: white;
+                  text-align: center;
+                  margin-bottom: 20px;
+                }
+                video {
+                  max-width: 90%;
+                  max-height: 70%;
+                  border-radius: 8px;
+                }
+              </style>
+            </head>
+            <body>
+              <h1>${videoForm.title || videoFile.name}</h1>
+              <video controls autoplay>
+                <source src="${videoPreviewUrl}" type="${videoFile.type}">
+                Your browser does not support the video tag.
+              </video>
+            </body>
+          </html>
+        `);
+        previewWindow.document.close();
+      }
     } else {
       toast({
         title: "No Video Selected",
@@ -204,6 +264,15 @@ const VideoUploadForm = () => {
     }
   };
 
+  // Clean up object URL when component unmounts
+  React.useEffect(() => {
+    return () => {
+      if (videoPreviewUrl) {
+        URL.revokeObjectURL(videoPreviewUrl);
+      }
+    };
+  }, [videoPreviewUrl]);
+
   return (
     <Card className="mt-8">
       <CardHeader>
@@ -211,7 +280,7 @@ const VideoUploadForm = () => {
           <Video className="text-red-600" size={24} />
           Upload Video Content
         </CardTitle>
-        <CardDescription>Upload and publish video content that will appear on the homepage</CardDescription>
+        <CardDescription>Upload and publish video content that will appear on the homepage and video page</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handlePublish} className="space-y-6">
@@ -278,7 +347,7 @@ const VideoUploadForm = () => {
                   disabled={isUploading}
                 />
                 {videoFile && (
-                  <p className="text-sm text-green-600">Selected: {videoFile.name}</p>
+                  <p className="text-sm text-green-600">Selected: {videoFile.name} ({(videoFile.size / (1024 * 1024)).toFixed(2)} MB)</p>
                 )}
               </div>
 
