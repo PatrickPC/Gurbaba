@@ -45,16 +45,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   
                   {/* Category routes */}
-                  <Route path="/national" element={<CategoryPage />} />
-                  <Route path="/politics" element={<CategoryPage />} />
-                  <Route path="/valley" element={<CategoryPage />} />
-                  <Route path="/opinion" element={<CategoryPage />} />
-                  <Route path="/money" element={<CategoryPage />} />
-                  <Route path="/sports" element={<CategoryPage />} />
-                  <Route path="/culture-lifestyle" element={<CategoryPage />} />
-                  <Route path="/science-technology" element={<CategoryPage />} />
-                  <Route path="/world" element={<CategoryPage />} />
-                  <Route path="/interviews" element={<CategoryPage />} />
+                  <Route path="/:category" element={<CategoryPage />} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
