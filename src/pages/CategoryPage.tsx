@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import NewsCard from '../components/NewsCard';
+import Advertisement from '../components/Advertisement';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
 
@@ -63,6 +64,11 @@ const CategoryPage = () => {
             Database articles: {databaseCategoryNews.length} | Mock articles: {mockCategoryNews.length} | Total showing: {categoryNews.length}
           </div>
         </div>
+
+
+        {/* Advertisement Banner */}
+        <Advertisement variant="banner" size="medium" />
+
 
         {/* News Grid */}
         {categoryNews.length > 0 ? (

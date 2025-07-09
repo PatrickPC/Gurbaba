@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import BreakingNews from '../components/BreakingNews';
 import NewsCard from '../components/NewsCard';
 import VideoSection from '../components/VideoSection';
+import Advertisement from '../components/Advertisement';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
 import { getPublishedDate } from '../utils/newsHelpers';
@@ -96,6 +97,9 @@ const Index = () => {
             ))}
           </div>
         </section>
+
+        {/* Advertisement banner */}
+        <Advertisement variant="banner" size="large"/>
 
         {/* Show Database Articles - Moved here above category sections */}
         {articles.length > 0 && (
@@ -382,6 +386,9 @@ const Index = () => {
             )
           ))}
         </section>
+
+         {/* Advertisement Inline */}
+         <Advertisement variant="inline" size="medium" />
 
         {/* Video News Section - Moved to Bottom */}
         <VideoSection />
