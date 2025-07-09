@@ -111,16 +111,33 @@ export const useNewsData = () => {
     console.log('Getting articles by category:', category);
     console.log('Available articles:', articles);
     
+    if (!category) {
+      console.log('No category provided, returning empty array');
+      return [];
+    }
+    
     const filtered = articles.filter(article => {
       const articleCategory = article.category.toLowerCase();
       const searchCategory = category.toLowerCase();
       
-      // Handle URL-formatted categories (with hyphens)
-      const normalizedArticleCategory = articleCategory.replace(' & ', '-').replace(' ', '-');
-      const normalizedSearchCategory = searchCategory.replace(' & ', '-').replace(' ', '-');
+      // Handle URL-formatted categories (with hyphens) - convert both ways
+      const normalizedArticleCategory = articleCategory.replace(/\s+&\s+/g, '-').replace(/\s+/g, '-');
+      const normalizedSearchCategory = searchCategory.replace(/\s+&\s+/g, '-').replace(/\s+/g, '-');
+      
+      // Also try converting hyphens back to spaces for matching
+      const articleCategoryWithSpaces = normalizedSearchCategory.replace(/-/g, ' ');
+      
+      console.log('Comparing:', {
+        articleCategory,
+        searchCategory,
+        normalizedArticleCategory,
+        normalizedSearchCategory,
+        articleCategoryWithSpaces
+      });
       
       return articleCategory === searchCategory || 
-             normalizedArticleCategory === normalizedSearchCategory;
+             normalizedArticleCategory === normalizedSearchCategory ||
+             articleCategory === articleCategoryWithSpaces;
     });
     
     console.log('Filtered articles:', filtered);
