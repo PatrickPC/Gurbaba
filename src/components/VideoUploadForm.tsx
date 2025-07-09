@@ -71,12 +71,10 @@ const VideoUploadForm = () => {
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 50 * 1024 * 1024) { // 50MB limit for Supabase
-
+      if (file.size > 200 * 1024 * 1024) { // 200MB limit for larger videos
         toast({
           title: "File Too Large",
-          description: "Video file must be less than 50MB. Please compress your video or use a smaller file.",
-
+          description: "Video file must be less than 200MB. Please compress your video or use a smaller file.",
           variant: "destructive"
         });
         return;

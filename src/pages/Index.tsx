@@ -54,6 +54,12 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <BreakingNews />
+
+            {/* Advertisement Banner - Moved to top */}
+            <div className="container mx-auto px-4 pt-4">
+        <Advertisement variant="banner" size="large" />
+      </div>
+      
       
       <main className="container mx-auto px-4 py-8">
         {/* Featured Story Section */}
@@ -98,8 +104,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Advertisement banner */}
-        <Advertisement variant="banner" size="large"/>
 
         {/* Show Database Articles - Moved here above category sections */}
         {articles.length > 0 && (
