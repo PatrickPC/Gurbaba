@@ -17,6 +17,7 @@ const NewsDetail = lazy(() => import("./pages/NewsDetail"));
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminEdit = lazy(() => import("./pages/AdminEdit"));
 const AdminManage = lazy(() => import("./pages/AdminManage"));
+const AdminManageVideos = lazy(() => import("./pages/AdminManageVideos"));
 const Staff = lazy(() => import("./pages/Staff"));
 const Login = lazy(() => import("./pages/Login"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/edit/:id" element={<AdminEdit />} />
                   <Route path="/admin/manage" element={<AdminManage />} />
+                  <Route path="/admin/manage-videos" element={<AdminManageVideos />} />
                   <Route path="/staff" element={<Staff />} />
                   <Route path="/login" element={<Login />} />
                   
