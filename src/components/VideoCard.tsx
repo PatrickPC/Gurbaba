@@ -24,6 +24,23 @@ const VideoCard = ({ id, title, thumbnail, duration, author, publishedDate, vide
     setImageError(true);
   };
 
+  // Check if URL is a YouTube link
+  const isYouTubeUrl = (url: string) => {
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  };
+
+  // Extract YouTube video ID from URL
+  const getYouTubeVideoId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  // Get YouTube embed URL
+  const getYouTubeEmbedUrl = (videoId: string) => {
+    return `https://www.youtube.com/embed/${videoId}`;
+  };
+
   // Fallback image if thumbnail is not available or fails to load
   const displayThumbnail = imageError || !thumbnail 
     ? 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=800'
@@ -53,12 +70,24 @@ const VideoCard = ({ id, title, thumbnail, duration, author, publishedDate, vide
             </div>
           </>
         ) : (
-          <video
-            src={videoUrl}
-            controls
-            autoPlay
-            className="w-full h-48 object-cover rounded-lg"
-          />
+          <>
+            {isYouTubeUrl(videoUrl) ? (
+              <iframe
+                src={getYouTubeEmbedUrl(getYouTubeVideoId(videoUrl) || '')}
+                className="w-full h-48 rounded-lg"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                src={videoUrl}
+                controls
+                autoPlay
+                className="w-full h-48 object-cover rounded-lg"
+              />
+            )}
+          </>
         )}
       </div>
       <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-red-600 transition-colors line-clamp-2">
