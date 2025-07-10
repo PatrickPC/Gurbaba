@@ -1,42 +1,43 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { LogOut, Upload, Eye, Home, Clock, Shield } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { LogOut, Edit, Trash2, Plus, Home, Clock, Shield, Play } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
-import { useNews } from '../contexts/NewsContext';
 import { supabase } from '../integrations/supabase/Client';
-import VideoUploadForm from '../components/VideoUploadForm';
-import BreakingNewsManager from '../components/BreakingNewsManager';
+import { useQuery } from '@tanstack/react-query';
 
-const Admin = () => {
+interface Video {
+  id: string;
+  title: string;
+  author: string;
+  category: string;
+  created_at: string;
+  video_url: string;
+  thumbnail?: string;
+  duration?: string;
+}
+
+const AdminManageVideos = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sessionTimeLeft, setSessionTimeLeft] = useState(0);
-  const [newsForm, setNewsForm] = useState({
-    title: '',
-    excerpt: '',
-    content: '',
-    author: '',
-    category: '',
-    image: '',
-    tags: ''
-  });
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isPublishing, setIsPublishing] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { createArticle } = useNews();
 
-  const categories = [
-    'Politics', 'Sports', 'Money', 'Science & Technology', 'World', 
-    'Features', 'Columns', 'Editorial', 'Interviews', 'Opinion'
-  ];
+  // Fetch videos using react-query
+  const { data: videos = [], isLoading, error, refetch } = useQuery({
+    queryKey: ['admin-videos'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('videos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as Video[];
+    },
+  });
 
   useEffect(() => {
     const checkAuthentication = () => {
@@ -119,133 +120,73 @@ const Admin = () => {
     return `${hours}h ${mins}m`;
   };
 
-  const uploadImageToStorage = async (file: File): Promise<string | null> => {
-    try {
-      setIsUploadingImage(true);
-      
-      // Generate unique filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `news-articles/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from('news-images')
-        .upload(filePath, file);
-
-      if (error) {
-        console.error('Upload error:', error);
-        throw error;
-      }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('news-images')
-        .getPublicUrl(filePath);
-
-      return publicUrl;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive"
-      });
-      return null;
-    } finally {
-      setIsUploadingImage(false);
-    }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      
-      // Upload to Supabase Storage
-      const uploadedUrl = await uploadImageToStorage(file);
-      if (uploadedUrl) {
-        setNewsForm({...newsForm, image: uploadedUrl});
-        toast({
-          title: "Image Uploaded",
-          description: "Image has been uploaded successfully.",
-        });
-      }
-    }
-  };
-
-  const handlePublish = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newsForm.title || !newsForm.excerpt || !newsForm.content || !newsForm.author || !newsForm.category) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this video?')) {
       return;
     }
 
-    setIsPublishing(true);
-
     try {
-      // Convert tags string to array
-      const tagsArray = newsForm.tags 
-        ? newsForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
-        : [];
+      const { error } = await supabase
+        .from('videos')
+        .delete()
+        .eq('id', id);
 
-      const articleData = {
-        title: newsForm.title,
-        excerpt: newsForm.excerpt,
-        content: newsForm.content,
-        author: newsForm.author,
-        category: newsForm.category,
-        image: newsForm.image || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800',
-        tags: tagsArray
-      };
+      if (error) throw error;
 
-      const result = await createArticle(articleData);
-      
-      if (result.success) {
-        toast({
-          title: "Article Published!",
-          description: "Your news article has been published successfully and is now live on the homepage.",
-        });
-
-        // Reset form
-        setNewsForm({
-          title: '',
-          excerpt: '',
-          content: '',
-          author: '',
-          category: '',
-          image: '',
-          tags: ''
-        });
-        setImageFile(null);
-      } else {
-        throw new Error('Failed to publish article');
-      }
-    } catch (error) {
-      console.error('Publishing error:', error);
       toast({
-        title: "Publishing Failed",
-        description: "There was an error publishing your article. Please try again.",
+        title: "Video Deleted",
+        description: "The video has been successfully deleted.",
+      });
+
+      refetch();
+    } catch (error) {
+      console.error('Error deleting video:', error);
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete the video. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setIsPublishing(false);
     }
   };
 
-  const handlePreview = () => {
+  const handleEdit = (id: string) => {
+    // For now, just show a message - video editing functionality can be added later
     toast({
-      title: "Preview Mode",
-      description: "Preview functionality would open in a new window.",
+      title: "Edit Video",
+      description: "Video editing functionality will be available soon.",
     });
+  };
+
+  const isYouTubeUrl = (url: string) => {
+    return url.includes('youtube.com') || url.includes('youtu.be');
   };
 
   if (!isAuthenticated) {
     return <div>Loading...</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div>Loading videos...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-red-600">Error loading videos: {error.message}</div>
+      </div>
+    );
   }
 
   return (
@@ -256,7 +197,7 @@ const Admin = () => {
             <div>
               <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <Shield className="text-red-600" size={20} />
-                Secure Admin Panel
+                Admin Panel - Manage Videos
               </h1>
               <p className="text-sm text-gray-500">The Gurbaba Post</p>
             </div>
@@ -284,20 +225,12 @@ const Admin = () => {
                 Homepage
               </Button>
               <Button
-                onClick={() => navigate('/admin/manage')}
+                onClick={() => navigate('/admin')}
                 variant="outline"
                 className="flex items-center gap-2"
               >
-                <Eye size={16} />
-                Manage Articles
-              </Button>
-              <Button
-                onClick={() => navigate('/admin/manage-videos')}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Eye size={16} />
-                Manage Videos
+                <Plus size={16} />
+                Upload New Video
               </Button>
               <Button
                 variant="outline"
@@ -312,147 +245,81 @@ const Admin = () => {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <Card>
           <CardHeader>
-            <CardTitle>Publish New Article</CardTitle>
-            <CardDescription>Create and publish news articles that will appear on the homepage</CardDescription>
+            <CardTitle>Uploaded Videos</CardTitle>
+            <CardDescription>Manage all uploaded videos</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handlePublish} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="title">Article Title *</Label>
-                    <Input
-                      id="title"
-                      required
-                      placeholder="Enter article title"
-                      value={newsForm.title}
-                      onChange={(e) => setNewsForm({...newsForm, title: e.target.value})}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="author">Author *</Label>
-                    <Input
-                      id="author"
-                      required
-                      placeholder="Author name"
-                      value={newsForm.author}
-                      onChange={(e) => setNewsForm({...newsForm, author: e.target.value})}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="category">Category *</Label>
-                    <Select value={newsForm.category} onValueChange={(value) => setNewsForm({...newsForm, category: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="tags">Tags</Label>
-                    <Input
-                      id="tags"
-                      placeholder="Tag1, Tag2, Tag3"
-                      value={newsForm.tags}
-                      onChange={(e) => setNewsForm({...newsForm, tags: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="image">Featured Image</Label>
-                    <div className="mt-2">
-                      <Input
-                        id="image"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="mb-2"
-                        disabled={isUploadingImage}
-                      />
-                      {isUploadingImage && (
-                        <p className="text-sm text-blue-600">Uploading image...</p>
-                      )}
-                      {newsForm.image && (
-                        <div className="mt-2">
-                          <img
-                            src={newsForm.image}
-                            alt="Preview"
-                            className="w-full h-32 object-cover rounded-md border"
-                          />
-                          <p className="text-xs text-gray-500 mt-1">Image uploaded successfully</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="excerpt">Description/Excerpt *</Label>
-                    <Textarea
-                      id="excerpt"
-                      required
-                      placeholder="Brief description of the article"
-                      rows={4}
-                      value={newsForm.excerpt}
-                      onChange={(e) => setNewsForm({...newsForm, excerpt: e.target.value})}
-                    />
-                  </div>
-                </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Author</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Duration</TableHead>
+                  <TableHead>Upload Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {videos.map((video) => (
+                  <TableRow key={video.id}>
+                    <TableCell className="font-medium max-w-xs truncate">
+                      {video.title}
+                    </TableCell>
+                    <TableCell>{video.author}</TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        {video.category}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Play size={12} />
+                        {isYouTubeUrl(video.video_url) ? 'YouTube' : 'Upload'}
+                      </div>
+                    </TableCell>
+                    <TableCell>{video.duration || 'N/A'}</TableCell>
+                    <TableCell>{formatDate(video.created_at)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(video.id)}
+                          className="flex items-center gap-1"
+                        >
+                          <Edit size={14} />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(video.id)}
+                          className="flex items-center gap-1"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {videos.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                No videos found. Upload your first video to get started.
               </div>
-
-              <div>
-                <Label htmlFor="content">Article Content *</Label>
-                <Textarea
-                  id="content"
-                  required
-                  placeholder="Write your article content here..."
-                  rows={12}
-                  value={newsForm.content}
-                  onChange={(e) => setNewsForm({...newsForm, content: e.target.value})}
-                />
-              </div>
-
-              <div className="flex gap-4 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePreview}
-                  className="flex items-center gap-2"
-                >
-                  <Eye size={16} />
-                  Preview
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isPublishing || isUploadingImage}
-                  className="bg-red-600 hover:bg-red-700 flex items-center gap-2"
-                >
-                  <Upload size={16} />
-                  {isPublishing ? 'Publishing...' : 'Publish Article'}
-                </Button>
-              </div>
-            </form>
+            )}
           </CardContent>
         </Card>
-
-        <BreakingNewsManager />
-        <VideoUploadForm />
       </main>
     </div>
   );
 };
 
-export default Admin;
+export default AdminManageVideos;
