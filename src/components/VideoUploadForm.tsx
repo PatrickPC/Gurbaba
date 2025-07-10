@@ -18,13 +18,15 @@ const VideoUploadForm = () => {
     author: '',
     category: '',
     thumbnail: '',
-    tags: ''
+    tags: '',
+    youtubeUrl: ''
   });
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
+  const [uploadMethod, setUploadMethod] = useState<'file' | 'youtube'>('youtube');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -71,10 +73,10 @@ const VideoUploadForm = () => {
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 200 * 1024 * 1024) { // 200MB limit for larger videos
+      if (file.size > 50 * 1024 * 1024) { // 50MB limit for Supabase free plan
         toast({
           title: "File Too Large",
-          description: "Video file must be less than 200MB. Please compress your video or use a smaller file.",
+          description: "Video file must be less than 50MB on the free plan. Consider using YouTube URL instead.",
           variant: "destructive"
         });
         return;
@@ -120,10 +122,28 @@ const VideoUploadForm = () => {
   const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!videoForm.title || !videoForm.description || !videoForm.author || !videoForm.category || !videoFile) {
+    if (!videoForm.title || !videoForm.description || !videoForm.author || !videoForm.category) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields and select a video file.",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (uploadMethod === 'file' && !videoFile) {
+      toast({
+        title: "Missing Video File",
+        description: "Please select a video file to upload.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (uploadMethod === 'youtube' && !videoForm.youtubeUrl) {
+      toast({
+        title: "Missing YouTube URL",
+        description: "Please enter a YouTube URL.",
         variant: "destructive"
       });
       return;
@@ -132,16 +152,23 @@ const VideoUploadForm = () => {
     setIsUploading(true);
 
     try {
-      console.log('Starting video upload process...');
+      console.log('Starting video publishing process...');
       
-      // Upload video file
-      const videoUrl = await uploadFileToStorage(videoFile, 'videos', 'video-files');
+      let videoUrl = '';
       
-      if (!videoUrl) {
-        throw new Error('Failed to upload video file');
+      if (uploadMethod === 'file') {
+        // Upload video file
+        videoUrl = await uploadFileToStorage(videoFile!, 'videos', 'video-files');
+        
+        if (!videoUrl) {
+          throw new Error('Failed to upload video file');
+        }
+        console.log('Video uploaded successfully, URL:', videoUrl);
+      } else {
+        // Use YouTube URL
+        videoUrl = videoForm.youtubeUrl;
+        console.log('Using YouTube URL:', videoUrl);
       }
-
-      console.log('Video uploaded successfully, URL:', videoUrl);
 
       // Convert tags string to array
       const tagsArray = videoForm.tags 
@@ -190,7 +217,8 @@ const VideoUploadForm = () => {
         author: '',
         category: '',
         thumbnail: '',
-        tags: ''
+        tags: '',
+        youtubeUrl: ''
       });
       setVideoFile(null);
       setThumbnailFile(null);
@@ -212,7 +240,10 @@ const VideoUploadForm = () => {
   };
 
   const handlePreview = () => {
-    if (videoPreviewUrl && videoFile) {
+    if (uploadMethod === 'youtube' && videoForm.youtubeUrl) {
+      // Open YouTube video in new tab
+      window.open(videoForm.youtubeUrl, '_blank');
+    } else if (uploadMethod === 'file' && videoPreviewUrl && videoFile) {
       // Create a new window to show the video preview
       const previewWindow = window.open('', '_blank', 'width=800,height=600');
       if (previewWindow) {
@@ -257,8 +288,8 @@ const VideoUploadForm = () => {
       }
     } else {
       toast({
-        title: "No Video Selected",
-        description: "Please select a video file to preview.",
+        title: "No Video to Preview",
+        description: uploadMethod === 'youtube' ? "Please enter a YouTube URL to preview." : "Please select a video file to preview.",
         variant: "destructive"
       });
     }
@@ -284,6 +315,34 @@ const VideoUploadForm = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handlePublish} className="space-y-6">
+          <div className="mb-6">
+            <Label className="text-base font-semibold">Upload Method</Label>
+            <div className="flex gap-4 mt-2">
+              <button
+                type="button"
+                onClick={() => setUploadMethod('youtube')}
+                className={`px-4 py-2 rounded-md ${
+                  uploadMethod === 'youtube' 
+                    ? 'bg-red-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                YouTube URL (Recommended)
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadMethod('file')}
+                className={`px-4 py-2 rounded-md ${
+                  uploadMethod === 'file' 
+                    ? 'bg-red-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                File Upload (50MB max)
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
@@ -336,20 +395,40 @@ const VideoUploadForm = () => {
             </div>
 
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="video-file">Video File *</Label>
-                <Input
-                  id="video-file"
-                  type="file"
-                  accept="video/*"
-                  onChange={handleVideoUpload}
-                  className="mb-2"
-                  disabled={isUploading}
-                />
-                {videoFile && (
-                  <p className="text-sm text-green-600">Selected: {videoFile.name} ({(videoFile.size / (1024 * 1024)).toFixed(2)} MB)</p>
-                )}
-              </div>
+              {uploadMethod === 'youtube' ? (
+                <div>
+                  <Label htmlFor="youtube-url">YouTube URL *</Label>
+                  <Input
+                    id="youtube-url"
+                    type="url"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    value={videoForm.youtubeUrl}
+                    onChange={(e) => setVideoForm({...videoForm, youtubeUrl: e.target.value})}
+                    className="mb-2"
+                  />
+                  <p className="text-sm text-gray-600">
+                    Paste a YouTube video URL to embed the video instead of uploading a file
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <Label htmlFor="video-file">Video File *</Label>
+                  <Input
+                    id="video-file"
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoUpload}
+                    className="mb-2"
+                    disabled={isUploading}
+                  />
+                  {videoFile && (
+                    <p className="text-sm text-green-600">Selected: {videoFile.name} ({(videoFile.size / (1024 * 1024)).toFixed(2)} MB)</p>
+                  )}
+                  <p className="text-sm text-gray-600">
+                    Maximum file size: 50MB (Supabase free plan limit)
+                  </p>
+                </div>
+              )}
 
               <div>
                 <Label htmlFor="video-thumbnail">Thumbnail Image</Label>
@@ -395,7 +474,7 @@ const VideoUploadForm = () => {
               variant="outline"
               onClick={handlePreview}
               className="flex items-center gap-2"
-              disabled={!videoFile}
+              disabled={uploadMethod === 'file' && !videoFile}
             >
               <Eye size={16} />
               Preview Video
