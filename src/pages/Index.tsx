@@ -5,6 +5,7 @@ import BreakingNews from '../components/BreakingNews';
 import NewsCard from '../components/NewsCard';
 import VideoSection from '../components/VideoSection';
 import Advertisement from '../components/Advertisement';
+import RadioPlayer from '../components/RadioPlayer';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
 import { getPublishedDate } from '../utils/newsHelpers';
@@ -397,6 +398,8 @@ const Index = () => {
         {/* Video News Section - Moved to Bottom */}
         <VideoSection />
       </main>
+
+      <RadioPlayer />
 
       <Footer />
     </div>

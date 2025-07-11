@@ -13,6 +13,7 @@ import { useNews } from '../contexts/NewsContext';
 import { supabase } from '../integrations/supabase/Client';
 import VideoUploadForm from '../components/VideoUploadForm';
 import BreakingNewsManager from '../components/BreakingNewsManager';
+import RadioPlayer from '@/components/RadioPlayer';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -451,6 +452,7 @@ const Admin = () => {
         <BreakingNewsManager />
         <VideoUploadForm />
       </main>
+      <RadioPlayer/>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 import Map from '../components/Map';
 import { useLanguage } from '../contexts/LanguageContext';
+import RadioPlayer from '@/components/RadioPlayer';
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -242,6 +243,7 @@ const Contact = () => {
       </main>
 
       <Footer />
+      <RadioPlayer/>
     </div>
   );
 };

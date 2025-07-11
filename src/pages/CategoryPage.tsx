@@ -6,6 +6,7 @@ import NewsCard from '../components/NewsCard';
 import Advertisement from '../components/Advertisement';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
+import RadioPlayer from '@/components/RadioPlayer';
 
 const CategoryPage = () => {
   const { category } = useParams();
@@ -104,6 +105,7 @@ const CategoryPage = () => {
       </main>
 
       <Footer />
+      <RadioPlayer/>
     </div>
   );
 };

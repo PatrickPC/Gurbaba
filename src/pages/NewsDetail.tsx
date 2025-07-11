@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark } from 'lucide-react';
+import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Radio } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import RadioPlayer from '@/components/RadioPlayer';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
 import { getPublishedDate, getReadTime } from '../utils/newsHelpers';
@@ -240,6 +241,7 @@ const NewsDetail = () => {
       </main>
 
       <Footer />
+      <RadioPlayer/>
     </div>
   );
 };

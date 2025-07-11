@@ -3,6 +3,7 @@ import { ArrowLeft, Mail, Phone, MapPin } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import RadioPlayer from '@/components/RadioPlayer';
 
 const Staff = () => {
   const staffMembers = [
@@ -189,6 +190,7 @@ const Staff = () => {
       </main>
 
       <Footer />
+      <RadioPlayer/>
     </div>
   );
 };
