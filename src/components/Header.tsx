@@ -22,6 +22,7 @@ const Header = () => {
     { key: 'nav.scienceTech', slug: 'science-technology' },
     { key: 'nav.world', slug: 'world' },
     { key: 'nav.video', slug: 'video' },
+    { key: 'nav.audio', slug: 'audio' },
     { key: 'nav.aboutUs', slug: 'about' },
     { key: 'nav.contact', slug: 'contact' },
     { key: 'nav.interviews', slug: 'interviews' }

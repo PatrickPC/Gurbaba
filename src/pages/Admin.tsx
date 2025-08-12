@@ -12,6 +12,7 @@ import { useToast } from '../hooks/use-toast';
 import { useNews } from '../contexts/NewsContext';
 import { supabase } from '../integrations/supabase/Client';
 import VideoUploadForm from '../components/VideoUploadForm';
+import AudioUploadForm from '../components/AudioUploadForm';
 import BreakingNewsManager from '../components/BreakingNewsManager';
 import RadioPlayer from '@/components/RadioPlayer';
 
@@ -301,6 +302,14 @@ const Admin = () => {
                 Manage Videos
               </Button>
               <Button
+                onClick={() => navigate('/admin/manage-audios')}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Eye size={16} />
+                Manage Audios
+              </Button>
+              <Button
                 variant="outline"
                 onClick={handleLogout}
                 className="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50"
@@ -451,6 +460,8 @@ const Admin = () => {
 
         <BreakingNewsManager />
         <VideoUploadForm />
+        <AudioUploadForm />
+
       </main>
       <RadioPlayer/>
     </div>
