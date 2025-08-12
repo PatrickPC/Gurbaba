@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Upload, Music2, Eye } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
-import { supabase } from '../integrations/supabase/client';
+import { supabase } from '../integrations/supabase/Client';
 import { useQueryClient } from '@tanstack/react-query';
 
 const AudioUploadForm = () => {
