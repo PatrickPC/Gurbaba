@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { NewsProvider } from "./contexts/NewsContext";
+import RadioPlayer from "./components/RadioPlayer";
+
+
 
 // Lazy load pages
 const Index = lazy(() => import("./pages/Index"));
@@ -57,6 +60,7 @@ function App() {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
+              <RadioPlayer />
             </Router>
           </TooltipProvider>
         </NewsProvider>
