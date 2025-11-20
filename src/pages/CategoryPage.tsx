@@ -61,9 +61,9 @@ const CategoryPage = () => {
           <p className="text-gray-600">
             Latest news and updates in {categoryName.toLowerCase()}
           </p>
-          <div className="text-sm text-gray-500 mt-2">
+          {/* <div className="text-sm text-gray-500 mt-2">
             Database articles: {databaseCategoryNews.length} | Mock articles: {mockCategoryNews.length} | Total showing: {categoryNews.length}
-          </div>
+          </div> */}
         </div>
 
 

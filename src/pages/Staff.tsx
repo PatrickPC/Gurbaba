@@ -83,18 +83,18 @@ const Staff = () => {
       joinDate: "2017",
       bio: "Award-winning photojournalist specializing in documentary photography.",
       image: "src/images/gaurishankar.jpeg"
-    },
-    {
-      id: 8,
-      name: "Kritika Sigdel",
-      position: "Digital Content Manager",
-      department: "Digital",
-      email: "kritika@gurbabapost.com",
-      phone: "+977-1-4270781",
-      joinDate: "2022",
-      bio: "Manages online content strategy and social media presence.",
-      image: "/placeholder.svg"
     }
+    // {
+    //   // id: 8,
+    //   // name: "Kritika Sigdel",
+    //   // position: "Digital Content Manager",
+    //   // department: "Digital",
+    //   // email: "kritika@gurbabapost.com",
+    //   // phone: "+977-1-4270781",
+    //   // joinDate: "2022",
+    //   // bio: "Manages online content strategy and social media presence.",
+    //   // image: "/placeholder.svg"
+    // }
   ];
 
   const departments = [...new Set(staffMembers.map(member => member.department))];

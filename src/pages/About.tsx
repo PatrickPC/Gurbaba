@@ -13,10 +13,10 @@ const About = () => {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            About The Kathmandu Post
+            About Gurbaba 
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Nepal's leading English-language daily newspaper, committed to delivering news without fear or favour since 1993.
+          Gurbaba is a community radio in Bardiya that primarily serves the Tharu community with bilingual programs focused on local news, culture, and identity.
           </p>
         </div>
 
@@ -38,9 +38,9 @@ const About = () => {
               </p>
               
               <p className="mb-6">
-                Over the years, The Guraba Post has evolved from a small startup to become one of Nepal's most trusted 
+                Over the years, Gurbaba has evolved from a small startup to become one of most trusted local 
                 news sources. We have embraced digital transformation while maintaining our commitment to journalistic excellence, 
-                reaching readers both in print and online across the globe.
+                reaching readers through online across the globe.
               </p>
 
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Values</h3>
@@ -54,15 +54,14 @@ const About = () => {
 
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Awards & Recognition</h3>
               <p className="mb-4">
-                The Gurbaba Post has received numerous awards for journalistic excellence, including recognition from 
-                international press organizations for our coverage of major events in Nepal's history. Our investigative 
-                reporting has led to significant policy changes and greater government accountability.
+                Gurbaba has received numerous awards for journalistic excellence, including recognition from 
+                international press organizations for our coverage of major events and achievement throughout our journey. 
               </p>
 
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Digital Innovation</h3>
               <p className="mb-4">
                 As media consumption habits evolve, we have invested heavily in digital platforms to reach our audience 
-                wherever they are. Our website and mobile applications provide real-time news updates, while our social 
+                wherever they are. Our website  provide real-time news updates, while our social 
                 media presence keeps readers engaged with breaking news and in-depth analysis.
               </p>
             </div>
@@ -98,7 +97,7 @@ const About = () => {
                   <Users className="text-red-600" size={20} />
                   <div>
                     <div className="font-semibold">Daily Readership</div>
-                    <div className="text-gray-600">5000+</div>
+                    <div className="text-gray-600">500+</div>
                   </div>
                 </div>
               </div>

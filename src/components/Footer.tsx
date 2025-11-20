@@ -12,7 +12,7 @@ const Footer = () => {
           {/* About Section */}
           <div>
             <h3 className="text-xl font-bold mb-4">
-              {language === 'EN' ? 'THE GURBABA POST' : 'द गुरबाबा पोस्ट'}
+              {language === 'EN' ? ' GURBABA ' : ' गुरबाबा '}
             </h3>
             <p className="text-gray-300 text-sm mb-4">
               {t('footer.description')}

@@ -9,22 +9,22 @@ const Advertisement = ({ variant = 'banner', size = 'medium' }: AdvertisementPro
   const getAdContent = () => {
     const ads = [
       {
-        title: "Himalayan Bank Limited",
-        description: "Your trusted banking partner for over 30 years. Experience seamless digital banking.",
+        title: "",
+        description: "",
         image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=200&fit=crop",
         link: "#",
         color: "from-blue-600 to-blue-800"
       },
       {
-        title: "Nepal Tourism Board",
-        description: "Discover the beauty of Nepal. Visit Nepal 2024 - Naturally Nepal, Once is Not Enough",
+        title: "",
+        description: "",
         image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=200&fit=crop",
         link: "#",
         color: "from-green-600 to-green-800"
       },
       {
-        title: "Ncell Network",
-        description: "Stay connected with Nepal's largest network. Fast 4G coverage nationwide.",
+        title: "",
+        description: "",
         image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=200&fit=crop",
         link: "#",
         color: "from-purple-600 to-purple-800"

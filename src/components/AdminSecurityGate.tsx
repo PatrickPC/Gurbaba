@@ -24,8 +24,8 @@ const AdminSecurityGate = ({ onAccessGranted }: AdminSecurityGateProps) => {
   const [lockoutTimer, setLockoutTimer] = useState(0);
   const { toast } = useToast();
 
-  const MAX_ATTEMPTS = 3;
-  const LOCKOUT_DURATION = 300; // 5 minutes in seconds
+  const MAX_ATTEMPTS = 5;
+  const LOCKOUT_DURATION = 120; // 2 minutes in seconds
 
   useEffect(() => {
     // Check if there's an existing lockout

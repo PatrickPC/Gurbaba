@@ -21,11 +21,12 @@ const Header = () => {
     { key: 'nav.cultureLifestyle', slug: 'culture-lifestyle' },
     { key: 'nav.scienceTech', slug: 'science-technology' },
     { key: 'nav.world', slug: 'world' },
+    { key: 'nav.interviews', slug: 'interviews' },
     { key: 'nav.video', slug: 'video' },
     { key: 'nav.audio', slug: 'audio' },
     { key: 'nav.aboutUs', slug: 'about' },
-    { key: 'nav.contact', slug: 'contact' },
-    { key: 'nav.interviews', slug: 'interviews' }
+    { key: 'nav.contact', slug: 'contact' }
+    
   ];
 
   const toggleLanguage = () => {
@@ -34,8 +35,8 @@ const Header = () => {
     
     // Update document title based on language
     document.title = newLanguage === 'EN' 
-      ? 'The Gurbaba Post - Your trusted source for news and information.' 
-      : 'द गुरबाबा पोस्ट - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
+      ? ' Gurbaba  - Your trusted source for news and information.' 
+      : ' गुरबाबा  - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
   };
 
 
@@ -70,7 +71,7 @@ const Header = () => {
       } else {
         // Fallback to demo data if API fails
         setWeatherData({
-          temp: '28°C',
+          temp: '25°C-12°C',
           condition: 'Clear',
           airQuality: 'Good'
         });
@@ -79,7 +80,7 @@ const Header = () => {
       console.log('Weather API error, using fallback data:', error);
       // Fallback weather data for Bardiya
       setWeatherData({
-        temp: '28°C',
+        temp: '25°C-12°C',
         condition: 'Clear',
         airQuality: 'Good'
       });
@@ -100,8 +101,8 @@ const Header = () => {
   // Set initial title based on current language
   useEffect(() => {
     document.title = language === 'EN' 
-      ? 'The Gurbaba Post - Your trusted source for news and information.' 
-      : 'द गुरबाबा पोस्ट - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
+      ? ' Gurbaba  - Your trusted source for news and information.' 
+      : ' गुरबाबा  - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
   }, [language]);
 
 
@@ -153,7 +154,7 @@ const Header = () => {
             <Link to="/" className="flex-1 text-center">
               <div className="flex flex-col items-center">
                 <div className="text-2xl md:text-4xl font-bold text-gray-900 tracking-wider">
-                  {language === 'EN' ? 'THE GURBABA POST' : 'द गुरबाबा पोस्ट'}
+                  {language === 'EN' ? ' GURBABA ' : ' गुरबाबा '}
                 </div>
                 <div className="text-sm text-gray-600 mt-1">{t('header.tagline')}</div>
               </div>
@@ -204,7 +205,7 @@ const Header = () => {
             <Link to="/" className="flex-1 text-center">
               <div className="flex flex-col items-center">
                 <div className="text-lg md:text-xl font-bold text-gray-900 tracking-wider">
-                  {language === 'EN' ? 'THE GURBABA POST' : 'द गुरबाबा पोस्ट'}
+                  {language === 'EN' ? ' GURBABA POST' : ' गुरबाबा '}
                 </div>
               </div>
             </Link>

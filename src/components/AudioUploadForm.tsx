@@ -228,7 +228,7 @@ const AudioUploadForm = () => {
                 {audioFile && (
                   <p className="text-sm text-green-600">Selected: {audioFile.name} ({(audioFile.size / (1024 * 1024)).toFixed(2)} MB)</p>
                 )}
-                <p className="text-sm text-gray-600">Maximum file size: 50MB (Supabase free plan limit)</p>
+                <p className="text-sm text-gray-600">Maximum file size: 50MB </p>
               </div>
               <div>
                 <Label htmlFor="audio-thumbnail">Thumbnail Image</Label>
