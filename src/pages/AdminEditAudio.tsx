@@ -14,6 +14,7 @@ const AdminEditAudio = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [audioForm, setAudioForm] = useState({
     title: '',
     description: '',
@@ -42,6 +43,55 @@ const AdminEditAudio = () => {
       navigate('/login');
     }
   }, [navigate, id]);
+
+  const uploadFileToStorage = async (file: File, bucket: string, folder: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${folder}/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      return null;
+    }
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setIsUploadingThumbnail(true);
+      
+      const uploadedUrl = await uploadFileToStorage(file, 'audio-thumbnails', 'thumbnails');
+      if (uploadedUrl) {
+        setAudioForm({...audioForm, thumbnail: uploadedUrl});
+        toast({
+          title: "Thumbnail Uploaded",
+          description: "Thumbnail has been uploaded successfully.",
+        });
+      } else {
+        toast({
+          title: "Upload Failed",
+          description: "Failed to upload thumbnail.",
+          variant: "destructive"
+        });
+      }
+      setIsUploadingThumbnail(false);
+    }
+  };
 
   const fetchAudio = async () => {
     try {
@@ -258,13 +308,18 @@ const AdminEditAudio = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="thumbnail">Thumbnail URL</Label>
+                    <Label htmlFor="thumbnail">Thumbnail Image</Label>
                     <Input
                       id="thumbnail"
-                      placeholder="Thumbnail URL"
-                      value={audioForm.thumbnail}
-                      onChange={(e) => setAudioForm({...audioForm, thumbnail: e.target.value})}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleThumbnailUpload}
+                      className="mb-2"
+                      disabled={isUploadingThumbnail}
                     />
+                    {isUploadingThumbnail && (
+                      <p className="text-sm text-blue-600">Uploading thumbnail...</p>
+                    )}
                     {audioForm.thumbnail && (
                       <div className="mt-2">
                         <img
@@ -299,7 +354,7 @@ const AdminEditAudio = () => {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || isUploadingThumbnail}
                   className="bg-red-600 hover:bg-red-700 flex items-center gap-2"
                 >
                   <Save size={16} />
