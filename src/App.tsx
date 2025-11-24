@@ -20,6 +20,8 @@ const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const NewsDetail = lazy(() => import("./pages/NewsDetail"));
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminEdit = lazy(() => import("./pages/AdminEdit"));
+const AdminEditVideo = lazy(() => import("./pages/AdminEditVideo"));
+const AdminEditAudio = lazy(() => import("./pages/AdminEditAudio"));
 const AdminManage = lazy(() => import("./pages/AdminManage"));
 const AdminManageVideos = lazy(() => import("./pages/AdminManageVideos"));
 const AdminManageAudios = lazy(() => import("./pages/AdminManageAudios"));
@@ -47,6 +49,8 @@ function App() {
                   <Route path="/news/:id" element={<NewsDetail />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/admin/edit/:id" element={<AdminEdit />} />
+                  <Route path="/admin/edit-video/:id" element={<AdminEditVideo />} />
+                  <Route path="/admin/edit-audio/:id" element={<AdminEditAudio />} />
                   <Route path="/admin/manage" element={<AdminManage />} />
                   <Route path="/admin/manage-videos" element={<AdminManageVideos />} />
                   <Route path="/admin/manage-audios" element={<AdminManageAudios />} />
