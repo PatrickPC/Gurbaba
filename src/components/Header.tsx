@@ -12,15 +12,13 @@ const Header = () => {
   const { language, setLanguage, t } = useLanguage();
 
   const categories = [
+    { key: 'nav.local', slug: 'local' },
     { key: 'nav.national', slug: 'national' },
-    { key: 'nav.politics', slug: 'politics' },
-    { key: 'nav.valley', slug: 'valley' },
-    { key: 'nav.opinion', slug: 'opinion' },
-    { key: 'nav.money', slug: 'money' },
-    { key: 'nav.sports', slug: 'sports' },
+    { key: 'nav.agriculture', slug: 'agriculture' },
     { key: 'nav.cultureLifestyle', slug: 'culture-lifestyle' },
-    { key: 'nav.scienceTech', slug: 'science-technology' },
-    { key: 'nav.world', slug: 'world' },
+    { key: 'nav.politics', slug: 'politics' },
+    { key: 'nav.foreign', slug: 'foreign' },
+    { key: 'nav.sports', slug: 'sports' },
     { key: 'nav.interviews', slug: 'interviews' },
     { key: 'nav.video', slug: 'video' },
     { key: 'nav.audio', slug: 'audio' },
@@ -36,7 +34,7 @@ const Header = () => {
     // Update document title based on language
     document.title = newLanguage === 'EN' 
       ? ' Gurbaba  - Your trusted source for news and information.' 
-      : ' गुरबाबा  - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
+      : ' गुर्बाबा  - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
   };
 
 
@@ -71,7 +69,7 @@ const Header = () => {
       } else {
         // Fallback to demo data if API fails
         setWeatherData({
-          temp: '25°C-12°C',
+          temp: '23°C-9°C',
           condition: 'Clear',
           airQuality: 'Good'
         });
@@ -80,7 +78,7 @@ const Header = () => {
       console.log('Weather API error, using fallback data:', error);
       // Fallback weather data for Bardiya
       setWeatherData({
-        temp: '25°C-12°C',
+        temp: '23°C-9°C',
         condition: 'Clear',
         airQuality: 'Good'
       });
@@ -102,7 +100,7 @@ const Header = () => {
   useEffect(() => {
     document.title = language === 'EN' 
       ? ' Gurbaba  - Your trusted source for news and information.' 
-      : ' गुरबाबा  - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
+      : ' गुर्बाबा   - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
   }, [language]);
 
 
@@ -154,7 +152,7 @@ const Header = () => {
             <Link to="/" className="flex-1 text-center">
               <div className="flex flex-col items-center">
                 <div className="text-2xl md:text-4xl font-bold text-gray-900 tracking-wider">
-                  {language === 'EN' ? ' GURBABA ' : ' गुरबाबा '}
+                  {language === 'EN' ? ' GURBABA ' : ' गुर्बाबा  '}
                 </div>
                 <div className="text-sm text-gray-600 mt-1">{t('header.tagline')}</div>
               </div>
@@ -205,7 +203,7 @@ const Header = () => {
             <Link to="/" className="flex-1 text-center">
               <div className="flex flex-col items-center">
                 <div className="text-lg md:text-xl font-bold text-gray-900 tracking-wider">
-                  {language === 'EN' ? ' GURBABA POST' : ' गुरबाबा '}
+                  {language === 'EN' ? ' GURBABA POST' : ' गुर्बाबा  '}
                 </div>
               </div>
             </Link>

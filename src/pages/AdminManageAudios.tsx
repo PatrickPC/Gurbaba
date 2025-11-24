@@ -110,7 +110,7 @@ const AdminManageAudios = () => {
   };
 
   const handleEdit = (id: string) => {
-    toast({ title: 'Edit Audio', description: 'Audio editing functionality will be available soon.' });
+    navigate(`/admin/edit-audio/${id}`);
   };
 
   if (!isAuthenticated) return <div>Loading...</div>;

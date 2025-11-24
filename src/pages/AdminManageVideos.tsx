@@ -158,11 +158,7 @@ const AdminManageVideos = () => {
   };
 
   const handleEdit = (id: string) => {
-    // For now, just show a message - video editing functionality can be added later
-    toast({
-      title: "Edit Video",
-      description: "Video editing functionality will be available soon.",
-    });
+    navigate(`/admin/edit-video/${id}`);
   };
 
   const isYouTubeUrl = (url: string) => {
