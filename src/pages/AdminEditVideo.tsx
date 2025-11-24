@@ -10,16 +10,16 @@ import { LogOut, Save, ArrowLeft } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { supabase } from '../integrations/supabase/Client';
 
-const AdminEditAudio = () => {
+const AdminEditVideo = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [audioForm, setAudioForm] = useState({
+  const [videoForm, setVideoForm] = useState({
     title: '',
     description: '',
     author: '',
     category: '',
-    audio_url: '',
+    video_url: '',
     thumbnail: '',
     duration: '',
     tags: ''
@@ -37,40 +37,40 @@ const AdminEditAudio = () => {
     const auth = localStorage.getItem('isAdminAuthenticated');
     if (auth === 'true') {
       setIsAuthenticated(true);
-      fetchAudio();
+      fetchVideo();
     } else {
       navigate('/login');
     }
   }, [navigate, id]);
 
-  const fetchAudio = async () => {
+  const fetchVideo = async () => {
     try {
       const { data, error } = await supabase
-        .from('audios')
+        .from('videos')
         .select('*')
         .eq('id', id)
         .single();
 
       if (error) throw error;
 
-      setAudioForm({
+      setVideoForm({
         title: data.title,
         description: data.description || '',
         author: data.author,
         category: data.category,
-        audio_url: data.audio_url,
+        video_url: data.video_url,
         thumbnail: data.thumbnail || '',
         duration: data.duration || '',
         tags: data.tags ? data.tags.join(', ') : ''
       });
     } catch (error) {
-      console.error('Error fetching audio:', error);
+      console.error('Error fetching video:', error);
       toast({
         title: "Error",
-        description: "Failed to load audio for editing.",
+        description: "Failed to load video for editing.",
         variant: "destructive"
       });
-      navigate('/admin/manage-audios');
+      navigate('/admin/manage-videos');
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,7 @@ const AdminEditAudio = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!audioForm.title || !audioForm.author || !audioForm.category || !audioForm.audio_url) {
+    if (!videoForm.title || !videoForm.author || !videoForm.category || !videoForm.video_url) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -102,20 +102,20 @@ const AdminEditAudio = () => {
     setSaving(true);
 
     try {
-      const tagsArray = audioForm.tags 
-        ? audioForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+      const tagsArray = videoForm.tags 
+        ? videoForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
         : [];
 
       const { error } = await supabase
-        .from('audios')
+        .from('videos')
         .update({
-          title: audioForm.title,
-          description: audioForm.description,
-          author: audioForm.author,
-          category: audioForm.category,
-          audio_url: audioForm.audio_url,
-          thumbnail: audioForm.thumbnail,
-          duration: audioForm.duration,
+          title: videoForm.title,
+          description: videoForm.description,
+          author: videoForm.author,
+          category: videoForm.category,
+          video_url: videoForm.video_url,
+          thumbnail: videoForm.thumbnail,
+          duration: videoForm.duration,
           tags: tagsArray,
           updated_at: new Date().toISOString()
         })
@@ -124,16 +124,16 @@ const AdminEditAudio = () => {
       if (error) throw error;
 
       toast({
-        title: "Audio Updated!",
+        title: "Video Updated!",
         description: "Your changes have been saved successfully.",
       });
 
-      navigate('/admin/manage-audios');
+      navigate('/admin/manage-videos');
     } catch (error) {
       console.error('Update error:', error);
       toast({
         title: "Update Failed",
-        description: "There was an error updating the audio. Please try again.",
+        description: "There was an error updating the video. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -151,12 +151,12 @@ const AdminEditAudio = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Admin Panel - Edit Audio</h1>
+              <h1 className="text-xl font-bold text-gray-900">Admin Panel - Edit Video</h1>
               <p className="text-sm text-gray-500">The Gurbaba Post</p>
             </div>
             <div className="flex items-center gap-4">
               <Button
-                onClick={() => navigate('/admin/manage-audios')}
+                onClick={() => navigate('/admin/manage-videos')}
                 variant="outline"
                 className="flex items-center gap-2"
               >
@@ -179,21 +179,21 @@ const AdminEditAudio = () => {
       <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <Card>
           <CardHeader>
-            <CardTitle>Edit Audio</CardTitle>
-            <CardDescription>Update the audio information</CardDescription>
+            <CardTitle>Edit Video</CardTitle>
+            <CardDescription>Update the video information</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSave} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="title">Audio Title *</Label>
+                    <Label htmlFor="title">Video Title *</Label>
                     <Input
                       id="title"
                       required
-                      placeholder="Enter audio title"
-                      value={audioForm.title}
-                      onChange={(e) => setAudioForm({...audioForm, title: e.target.value})}
+                      placeholder="Enter video title"
+                      value={videoForm.title}
+                      onChange={(e) => setVideoForm({...videoForm, title: e.target.value})}
                     />
                   </div>
 
@@ -203,14 +203,14 @@ const AdminEditAudio = () => {
                       id="author"
                       required
                       placeholder="Author name"
-                      value={audioForm.author}
-                      onChange={(e) => setAudioForm({...audioForm, author: e.target.value})}
+                      value={videoForm.author}
+                      onChange={(e) => setVideoForm({...videoForm, author: e.target.value})}
                     />
                   </div>
 
                   <div>
                     <Label htmlFor="category">Category *</Label>
-                    <Select value={audioForm.category} onValueChange={(value) => setAudioForm({...audioForm, category: value})}>
+                    <Select value={videoForm.category} onValueChange={(value) => setVideoForm({...videoForm, category: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
@@ -229,8 +229,8 @@ const AdminEditAudio = () => {
                     <Input
                       id="duration"
                       placeholder="5:23"
-                      value={audioForm.duration}
-                      onChange={(e) => setAudioForm({...audioForm, duration: e.target.value})}
+                      value={videoForm.duration}
+                      onChange={(e) => setVideoForm({...videoForm, duration: e.target.value})}
                     />
                   </div>
 
@@ -239,21 +239,21 @@ const AdminEditAudio = () => {
                     <Input
                       id="tags"
                       placeholder="Tag1, Tag2, Tag3"
-                      value={audioForm.tags}
-                      onChange={(e) => setAudioForm({...audioForm, tags: e.target.value})}
+                      value={videoForm.tags}
+                      onChange={(e) => setVideoForm({...videoForm, tags: e.target.value})}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="audio_url">Audio URL *</Label>
+                    <Label htmlFor="video_url">Video URL *</Label>
                     <Input
-                      id="audio_url"
+                      id="video_url"
                       required
-                      placeholder="Uploaded audio URL"
-                      value={audioForm.audio_url}
-                      onChange={(e) => setAudioForm({...audioForm, audio_url: e.target.value})}
+                      placeholder="YouTube URL or uploaded video URL"
+                      value={videoForm.video_url}
+                      onChange={(e) => setVideoForm({...videoForm, video_url: e.target.value})}
                     />
                   </div>
 
@@ -262,13 +262,13 @@ const AdminEditAudio = () => {
                     <Input
                       id="thumbnail"
                       placeholder="Thumbnail URL"
-                      value={audioForm.thumbnail}
-                      onChange={(e) => setAudioForm({...audioForm, thumbnail: e.target.value})}
+                      value={videoForm.thumbnail}
+                      onChange={(e) => setVideoForm({...videoForm, thumbnail: e.target.value})}
                     />
-                    {audioForm.thumbnail && (
+                    {videoForm.thumbnail && (
                       <div className="mt-2">
                         <img
-                          src={audioForm.thumbnail}
+                          src={videoForm.thumbnail}
                           alt="Preview"
                           className="w-full h-32 object-cover rounded-md border"
                         />
@@ -280,10 +280,10 @@ const AdminEditAudio = () => {
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
-                      placeholder="Brief description of the audio"
+                      placeholder="Brief description of the video"
                       rows={4}
-                      value={audioForm.description}
-                      onChange={(e) => setAudioForm({...audioForm, description: e.target.value})}
+                      value={videoForm.description}
+                      onChange={(e) => setVideoForm({...videoForm, description: e.target.value})}
                     />
                   </div>
                 </div>
@@ -293,7 +293,7 @@ const AdminEditAudio = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate('/admin/manage-audios')}
+                  onClick={() => navigate('/admin/manage-videos')}
                 >
                   Cancel
                 </Button>
@@ -314,4 +314,4 @@ const AdminEditAudio = () => {
   );
 };
 
-export default AdminEditAudio;
+export default AdminEditVideo;
