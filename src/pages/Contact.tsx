@@ -55,17 +55,17 @@ const Contact = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900">{t(' Head Office')}</h3>
+                  <h3 className="font-semibold text-gray-900">{t(' Editorial Office')}</h3>
                   <p className="text-gray-600">
-                    Bansghadi, Bardiya 21800<br />
+                  Bansgadhi Municipality ward no. 5 Laxmanpur, Bardiya<br />
                     Nepal
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{t(' Postal Address')}</h3>
+                  <h3 className="font-semibold text-gray-900">{t(' Advertising')}</h3>
                   <p className="text-gray-600">
-                    GPO Box 21803, EPC 21800<br />
-                    Bardiya, Nepal
+                  For advertising inquiries and rates<br />
+                  Phone: 977-084-400003
                   </p>
                 </div>
               </CardContent>
@@ -105,19 +105,19 @@ const Contact = () => {
               <CardContent className="space-y-2">
                 <div>
                   <span className="font-semibold">{t(' GeneralInquiries:')}</span>
-                  <span className="ml-2 text-gray-600">info@radiogurbaba.com</span>
+                  <span className="ml-2 text-gray-600">fmgurbaba@gmail.com</span>
                 </div>
                 <div>
                   <span className="font-semibold">{t(' Editorial:')}</span>
-                  <span className="ml-2 text-gray-600">editor@radiogurbaba.com</span>
+                  <span className="ml-2 text-gray-600">fmgurbaba@gmail.com</span>
                 </div>
                 <div>
                   <span className="font-semibold">{t(' NewsTips:')}</span>
-                  <span className="ml-2 text-gray-600">news@radiogurbaba.com</span>
+                  <span className="ml-2 text-gray-600">fmgurbaba@gmail.com</span>
                 </div>
                 <div>
                   <span className="font-semibold">{t(' Advertising:')}</span>
-                  <span className="ml-2 text-gray-600">ads@radiogurbaba.com</span>
+                  <span className="ml-2 text-gray-600">fmgurbaba@gmail.com</span>
                 </div>
               </CardContent>
             </Card>
@@ -211,7 +211,7 @@ const Contact = () => {
                 <div className="space-y-2">
                   <div>
                     <span className="font-semibold">{t('Media Relations')}</span>
-                    <span className="ml-2 text-gray-600">media@radiogurbaba.com</span>
+                    <span className="ml-2 text-gray-600">fmgurbaba@gmail.com</span>
                   </div>
                   <div>
                     <span className="font-semibold">{t('Direct Line')}</span>

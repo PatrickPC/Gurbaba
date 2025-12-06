@@ -18,10 +18,10 @@ const Index = () => {
   const displayFeaturedNews = articles.length > 0 ? articles[0] : mockNews[0];
   const displayMainNews = articles.length > 1 ? articles.slice(1, 4) : mockNews.slice(1, 4);
 
-  // Get Opinion articles from database first, then fallback to mock data
-  const sidebarNews = articles.filter(news => news.category === 'Opinion').length > 0 
-    ? articles.filter(news => news.category === 'Opinion')
-    : mockNews.filter(news => news.category === 'Opinion');
+  // Get local news articles from database first, then fallback to mock data
+  const sidebarNews = articles.filter(news => news.category === 'Local').length > 0 
+    ? articles.filter(news => news.category === 'Local')
+    : mockNews.filter(news => news.category === 'Local');
 
   const categoryNews = {
     Politics: allNews.filter(news => news.category === 'Politics'),
@@ -75,7 +75,7 @@ const Index = () => {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
-                  OPINION
+                  LOCAL NEWS
                 </h2>
                 {sidebarNews.slice(0, 3).map((news) => (
                   <div key={news.id} className="mb-6">

@@ -11,7 +11,7 @@ interface LanguageContextType {
 
 const translations = {
   EN: {
-    'header.tagline': 'Without Fear or Favour',
+    'header.tagline': 'Inclusive Radio Common Voice',
     'nav.national': 'National',
     'nav.politics': 'Politics',
     'nav.local': 'Local',
@@ -29,7 +29,7 @@ const translations = {
     'home.loadMore': 'Load More',
     'article.share': 'Share',
     'article.relatedArticles': 'Related Articles',
-    'footer.description': ' Gurbaba  - Your trusted source for news without fear or favour. Stay informed with the latest updates from Nepal and around the world.',
+    'footer.description': ' Gurbaba  - Your trusted news source. Stay informed with the latest updates from Nepal and around the world.',
     'footer.quickLinks': 'Quick Links',
     'footer.aboutUs': 'About Us',
     'footer.contact': 'Contact',
@@ -82,7 +82,7 @@ const translations = {
     'contact.visitOffice': 'Visit our office during business hours or reach out to us using the contact information above.'
   },
   'नेपाली': {
-    'header.tagline': 'डर र पक्षपात बिना',
+    'header.tagline': 'समाबेशी रेडियो साझा आवाज ',
     'nav.national': 'राष्ट्रिय',
     'nav.politics': 'राजनीति',
     'nav.local': 'स्थानीय',
@@ -100,7 +100,7 @@ const translations = {
     'home.loadMore': 'थप लोड गर्नुहोस्',
     'article.share': 'बाँड्नुहोस्',
     'article.relatedArticles': 'सम्बन्धित लेख',
-    'footer.description': ' गुर्बाबा   - डर र पक्षपात बिना तपाईंको भरपर्दो समाचार स्रोत। नेपाल र विश्वभरका ताजा अपडेटहरूसँग अवगत रहनुहोस्।',
+    'footer.description': ' गुर्बाबा   - तपाईंको भरपर्दो समाचार स्रोत। नेपाल र विश्वभरका ताजा अपडेटहरूसँग अवगत रहनुहोस्।',
     'footer.quickLinks': 'द्रुत लिंकहरू',
     'footer.aboutUs': 'हाम्रो बारेमा',
     'footer.contact': 'सम्पर्क',

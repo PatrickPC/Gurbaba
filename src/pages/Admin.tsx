@@ -36,8 +36,8 @@ const Admin = () => {
   const { createArticle } = useNews();
 
   const categories = [
-    'Politics', 'Sports', 'Money', 'Science & Technology', 'World', 
-    'Features', 'Columns', 'Editorial', 'Interviews', 'Opinion'
+    'Local','National','Agriculture', 'Culture & Lifestyle', 'Foreign', 'Sports',  
+     'Interviews'
   ];
 
   useEffect(() => {

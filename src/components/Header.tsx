@@ -33,8 +33,8 @@ const Header = () => {
     
     // Update document title based on language
     document.title = newLanguage === 'EN' 
-      ? ' Gurbaba  - Your trusted source for news and information.' 
-      : ' गुर्बाबा  - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
+      ? ' Gurbaba  - Your trusted news source. Stay informed with the latest updates from Nepal and around the world.'   
+      : ' गुर्बाबा  - तपाईंको भरपर्दो समाचार स्रोत। नेपाल र विश्वभरका ताजा अपडेटहरूसँग अवगत रहनुहोस्।';
   };
 
 
@@ -69,7 +69,7 @@ const Header = () => {
       } else {
         // Fallback to demo data if API fails
         setWeatherData({
-          temp: '23°C-9°C',
+          temp: '24°C-7°C',
           condition: 'Clear',
           airQuality: 'Good'
         });
@@ -78,7 +78,7 @@ const Header = () => {
       console.log('Weather API error, using fallback data:', error);
       // Fallback weather data for Bardiya
       setWeatherData({
-        temp: '23°C-9°C',
+        temp: '24°C-7°C',
         condition: 'Clear',
         airQuality: 'Good'
       });
@@ -99,8 +99,8 @@ const Header = () => {
   // Set initial title based on current language
   useEffect(() => {
     document.title = language === 'EN' 
-      ? ' Gurbaba  - Your trusted source for news and information.' 
-      : ' गुर्बाबा   - तपाईंको विश्वसनीय समाचार र जानकारीको स्रोत।';
+      ? ' Gurbaba  - Your trusted news source. Stay informed with the latest updates from Nepal and around the world.' 
+      : ' गुर्बाबा   - तपाईंको भरपर्दो समाचार स्रोत। नेपाल र विश्वभरका ताजा अपडेटहरूसँग अवगत रहनुहोस्।';
   }, [language]);
 
 
@@ -203,7 +203,7 @@ const Header = () => {
             <Link to="/" className="flex-1 text-center">
               <div className="flex flex-col items-center">
                 <div className="text-lg md:text-xl font-bold text-gray-900 tracking-wider">
-                  {language === 'EN' ? ' GURBABA POST' : ' गुर्बाबा  '}
+                  {language === 'EN' ? ' GURBABA ' : ' गुर्बाबा  '}
                 </div>
               </div>
             </Link>
