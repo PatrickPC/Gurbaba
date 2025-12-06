@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
-import { Clock, User } from 'lucide-react';
+import { Clock, User, Eye } from 'lucide-react';
+
 
 interface NewsCardProps {
   id: string;
@@ -12,6 +13,7 @@ interface NewsCardProps {
   publishedAt?: string;
   category: string;
   readTime?: string;
+  views?: number;
   featured?: boolean;
 }
 
@@ -25,6 +27,7 @@ const NewsCard = ({
   publishedAt, 
   category, 
   readTime,
+  views,
   featured = false 
 }: NewsCardProps) => {
   const displayDate = published_at || publishedAt || 'Unknown date';
@@ -64,10 +67,18 @@ const NewsCard = ({
               <User size={16} />
               <span>{author}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Clock size={16} />
-              <time>{displayDate}</time>
-              {readTime && <span>• {readTime}</span>}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Clock size={16} />
+                <time>{displayDate}</time>
+                {readTime && <span>• {readTime}</span>}
+              </div>
+              {views !== undefined && (
+                <div className="flex items-center gap-1">
+                  <Eye size={16} />
+                  <span>{views.toLocaleString()}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

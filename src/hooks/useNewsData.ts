@@ -148,8 +148,7 @@ export const useNewsData = () => {
   const incrementArticleViews = async (id: string) => {
     try {
       const { error } = await supabase
-        .rpc('increment_article_views', { article_id: id });
-
+      .rpc('increment_article_views' as any, { article_id: id });
       if (error) throw error;
       
       // Refresh articles to get updated view count
