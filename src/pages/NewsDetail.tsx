@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Eye } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import RadioPlayer from '@/components/RadioPlayer';
@@ -11,6 +11,7 @@ import { getPublishedDate, getReadTime } from '../utils/newsHelpers';
 const NewsDetail = () => {
   const { id } = useParams();
   const { getArticleById, articles, loading, incrementArticleViews } = useNews();
+  const viewCountedRef = useRef<string | null>(null);
 
   
   // Try to get article from database first, fallback to mock data
@@ -25,13 +26,13 @@ const NewsDetail = () => {
   ).slice(0, 6);
 
 
-  // Increment view count when article is loaded
+  // Increment view count only once per article visit
   useEffect(() => {
-    if (id && databaseArticle) {
+    if (id && databaseArticle && viewCountedRef.current !== id) {
+      viewCountedRef.current = id;
       incrementArticleViews(id);
     }
-  }, [id, databaseArticle]);
-
+    }, [id, databaseArticle, incrementArticleViews]);
 
   if (loading) {
     return (
