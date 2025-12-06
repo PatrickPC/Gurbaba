@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Radio } from 'lucide-react';
+import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Eye } from 'lucide-react';
+import { useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import RadioPlayer from '@/components/RadioPlayer';
@@ -9,7 +10,8 @@ import { getPublishedDate, getReadTime } from '../utils/newsHelpers';
 
 const NewsDetail = () => {
   const { id } = useParams();
-  const { getArticleById, articles, loading } = useNews();
+  const { getArticleById, articles, loading, incrementArticleViews } = useNews();
+
   
   // Try to get article from database first, fallback to mock data
   const databaseArticle = getArticleById(id || '');
@@ -21,6 +23,15 @@ const NewsDetail = () => {
   const relatedNews = allNews.filter(news => 
     news.id !== id && news.category === article?.category
   ).slice(0, 6);
+
+
+  // Increment view count when article is loaded
+  useEffect(() => {
+    if (id && databaseArticle) {
+      incrementArticleViews(id);
+    }
+  }, [id, databaseArticle]);
+
 
   if (loading) {
     return (
@@ -100,6 +111,12 @@ const NewsDetail = () => {
                     <div className="flex items-center gap-2">
                       <Clock size={16} />
                       <span>{readTime}</span>
+                    </div>
+                  )}
+                  {databaseArticle && (
+                    <div className="flex items-center gap-2">
+                      <Eye size={16} />
+                      <span>{databaseArticle.views.toLocaleString()} views</span>
                     </div>
                   )}
                 </div>

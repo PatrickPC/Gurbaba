@@ -5,10 +5,11 @@ import { useNewsData, NewsArticle } from '../hooks/useNewsData';
 interface NewsContextType {
   articles: NewsArticle[];
   loading: boolean;
-  createArticle: (article: Omit<NewsArticle, 'id' | 'published_at' | 'updated_at' | 'readTime'>) => Promise<{ success: boolean; error?: any }>;
+  createArticle: (article: Omit<NewsArticle, 'id' | 'published_at' | 'updated_at' | 'readTime' | 'views'>) => Promise<{ success: boolean; error?: any }>;
   getArticleById: (id: string) => NewsArticle | undefined;
   getArticlesByCategory: (category: string) => NewsArticle[];
   refreshArticles: () => Promise<void>;
+  incrementArticleViews: (id: string) => Promise<void>;
 }
 
 const NewsContext = createContext<NewsContextType | undefined>(undefined);

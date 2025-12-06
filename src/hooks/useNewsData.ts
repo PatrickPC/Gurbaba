@@ -14,6 +14,7 @@ export interface NewsArticle {
   tags: string[];
   published_at: string;
   updated_at: string;
+  views: number;
   readTime?: string;
 }
 
@@ -144,6 +145,20 @@ export const useNewsData = () => {
     return filtered;
   };
 
+  const incrementArticleViews = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .rpc('increment_article_views', { article_id: id });
+
+      if (error) throw error;
+      
+      // Refresh articles to get updated view count
+      await fetchArticles();
+    } catch (error) {
+      console.error('Error incrementing article views:', error);
+    }
+  };
+
   useEffect(() => {
     fetchArticles();
   }, []);
@@ -154,6 +169,7 @@ export const useNewsData = () => {
     createArticle,
     getArticleById,
     getArticlesByCategory,
-    refreshArticles: fetchArticles
+    refreshArticles: fetchArticles,
+    incrementArticleViews
   };
 };
