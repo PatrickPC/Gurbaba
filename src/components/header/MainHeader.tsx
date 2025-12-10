@@ -13,8 +13,8 @@ const MainHeader = () => {
     
     // Update document title based on language
     document.title = newLanguage === 'EN' 
-      ? 'The Gurbaba Post - Without Fear or Favour' 
-      : 'द गुरबाबा पोस्ट - डर र पक्षपात बिना';
+      ? 'Gurbaba - Inclusive Radio Common Voice' 
+      : ' गुर्बाबा - समाबेशी रेडियो साझा आवाज ';
   };
 
   return (
@@ -22,7 +22,7 @@ const MainHeader = () => {
       <Link to="/" className="flex-1 text-center">
         <div className="flex flex-col items-center">
           <div className="text-3xl md:text-5xl font-bold text-gray-900 tracking-wider">
-            {language === 'EN' ? 'THE GURBABA POST' : 'द गुरबाबा पोस्ट'}
+            {language === 'EN' ? 'GURBABA' : ' गुर्बाबा'}
           </div>
           <div className="text-base md:text-lg text-gray-600 mt-1">{t('header.tagline')}</div>
         </div>

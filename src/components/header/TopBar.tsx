@@ -46,7 +46,7 @@ const TopBar = () => {
       } else {
         // Fallback to demo data if API fails
         setWeatherData({
-          temp: '28°C',
+          temp: '24°C-8°C',
           condition: 'Clear',
           airQuality: 'Good'
         });
