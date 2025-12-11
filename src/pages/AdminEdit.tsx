@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
@@ -20,17 +21,85 @@ const AdminEdit = () => {
     content: '',
     author: '',
     category: '',
-    image: '',
+    images: [] as string[],
     tags: ''
   });
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const categories = [
-    'Politics', 'Sports', 'Money', 'Science & Technology', 'World', 
-    'Features', 'Columns', 'Editorial', 'Interviews', 'Opinion'
+    'Local', 'National', 'Agriculture', 'Culture and Lifestyle', 'Foreign', 'Sports'
   ];
+
+  const uploadImageToStorage = async (file: File): Promise<string | null> => {
+    try {
+      setIsUploadingImage(true);
+      
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `news-articles/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('news-images')
+        .upload(filePath, file);
+
+      if (error) {
+        console.error('Upload error:', error);
+        throw error;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('news-images')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive"
+      });
+      return null;
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files);
+      setImageFiles(prev => [...prev, ...fileArray]);
+      
+      const uploadPromises = fileArray.map(file => uploadImageToStorage(file));
+      const uploadedUrls = await Promise.all(uploadPromises);
+      
+      const successfulUrls = uploadedUrls.filter(url => url !== null) as string[];
+      
+      if (successfulUrls.length > 0) {
+        setNewsForm(prev => ({
+          ...prev, 
+          images: [...prev.images, ...successfulUrls]
+        }));
+        toast({
+          title: "Images Uploaded",
+          description: `${successfulUrls.length} image(s) uploaded successfully.`,
+        });
+      }
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setNewsForm(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   useEffect(() => {
     const auth = localStorage.getItem('isAdminAuthenticated');
@@ -58,7 +127,7 @@ const AdminEdit = () => {
         content: data.content,
         author: data.author,
         category: data.category,
-        image: data.image || '',
+        images: data.images || [],
         tags: data.tags ? data.tags.join(', ') : ''
       });
     } catch (error) {
@@ -110,7 +179,7 @@ const AdminEdit = () => {
           content: newsForm.content,
           author: newsForm.author,
           category: newsForm.category,
-          image: newsForm.image || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800',
+          images: newsForm.images.length > 0 ? newsForm.images : ['https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'],
           tags: tagsArray,
           updated_at: new Date().toISOString()
         })
@@ -232,22 +301,41 @@ const AdminEdit = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="image">Featured Image URL</Label>
-                    <Input
-                      id="image"
-                      placeholder="Image URL"
-                      value={newsForm.image}
-                      onChange={(e) => setNewsForm({...newsForm, image: e.target.value})}
-                    />
-                    {newsForm.image && (
-                      <div className="mt-2">
-                        <img
-                          src={newsForm.image}
-                          alt="Preview"
-                          className="w-full h-32 object-cover rounded-md border"
-                        />
-                      </div>
-                    )}
+                    <Label htmlFor="images">Article Images (Multiple)</Label>
+                    <div className="mt-2">
+                      <Input
+                        id="images"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageUpload}
+                        className="mb-2"
+                        disabled={isUploadingImage}
+                      />
+                      {isUploadingImage && (
+                        <p className="text-sm text-blue-600">Uploading images...</p>
+                      )}
+                      {newsForm.images.length > 0 && (
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          {newsForm.images.map((imageUrl, index) => (
+                            <div key={index} className="relative">
+                              <img
+                                src={imageUrl}
+                                alt={`Preview ${index + 1}`}
+                                className="w-full h-32 object-cover rounded-md border"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(index)}
+                                className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div>
