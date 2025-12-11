@@ -20,7 +20,7 @@ export const getReadTime = (article: NewsUnion): string | undefined => {
 
 export const getImage = (article: NewsUnion): string => {
   if ('images' in article) {
-    return article.images && (article.images as string[]).length > 0 
+    return article.images && article.images.length > 0 
       ? article.images[0] 
       : 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800';
   }
@@ -29,7 +29,7 @@ export const getImage = (article: NewsUnion): string => {
 
 export const getImages = (article: NewsUnion): string[] => {
   if ('images' in article) {
-    return article.images as string[] || [];
+    return article.images || [];
   }
   return article.image ? [article.image] : [];
 };
