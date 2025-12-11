@@ -14,8 +14,6 @@ import { supabase } from '../integrations/supabase/Client';
 import VideoUploadForm from '../components/VideoUploadForm';
 import AudioUploadForm from '../components/AudioUploadForm';
 import BreakingNewsManager from '../components/BreakingNewsManager';
-import RadioPlayer from '@/components/RadioPlayer';
-
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sessionTimeLeft, setSessionTimeLeft] = useState(0);
@@ -25,10 +23,10 @@ const Admin = () => {
     content: '',
     author: '',
     category: '',
-    image: '',
+    images: [] as string[],
     tags: ''
   });
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const navigate = useNavigate();
@@ -36,8 +34,7 @@ const Admin = () => {
   const { createArticle } = useNews();
 
   const categories = [
-    'Local','National','Agriculture', 'Culture & Lifestyle', 'Foreign', 'Sports',  
-     'Interviews'
+    'Local', 'National', 'Agriculture', 'Culture & Lifestyle', 'Foreign', 'Sports'
   ];
 
   useEffect(() => {
@@ -159,20 +156,36 @@ const Admin = () => {
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files);
+      setImageFiles(prev => [...prev, ...fileArray]);
       
-      // Upload to Supabase Storage
-      const uploadedUrl = await uploadImageToStorage(file);
-      if (uploadedUrl) {
-        setNewsForm({...newsForm, image: uploadedUrl});
+      // Upload all files to Supabase Storage
+      const uploadPromises = fileArray.map(file => uploadImageToStorage(file));
+      const uploadedUrls = await Promise.all(uploadPromises);
+      
+      const successfulUrls = uploadedUrls.filter(url => url !== null) as string[];
+      
+      if (successfulUrls.length > 0) {
+        setNewsForm(prev => ({
+          ...prev, 
+          images: [...prev.images, ...successfulUrls]
+        }));
         toast({
-          title: "Image Uploaded",
-          description: "Image has been uploaded successfully.",
+          title: "Images Uploaded",
+          description: `${successfulUrls.length} image(s) uploaded successfully.`,
         });
       }
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setNewsForm(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handlePublish = async (e: React.FormEvent) => {
@@ -201,7 +214,7 @@ const Admin = () => {
         content: newsForm.content,
         author: newsForm.author,
         category: newsForm.category,
-        image: newsForm.image || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800',
+        images: newsForm.images.length > 0 ? newsForm.images : ['https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'],
         tags: tagsArray
       };
 
@@ -220,10 +233,10 @@ const Admin = () => {
           content: '',
           author: '',
           category: '',
-          image: '',
+          images: [],
           tags: ''
         });
-        setImageFile(null);
+        setImageFiles([]);
       } else {
         throw new Error('Failed to publish article');
       }
@@ -383,27 +396,38 @@ const Admin = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="image">Featured Image</Label>
+                    <Label htmlFor="images">Article Images (Multiple)</Label>
                     <div className="mt-2">
                       <Input
-                        id="image"
+                        id="images"
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={handleImageUpload}
                         className="mb-2"
                         disabled={isUploadingImage}
                       />
                       {isUploadingImage && (
-                        <p className="text-sm text-blue-600">Uploading image...</p>
+                        <p className="text-sm text-blue-600">Uploading images...</p>
                       )}
-                      {newsForm.image && (
-                        <div className="mt-2">
-                          <img
-                            src={newsForm.image}
-                            alt="Preview"
-                            className="w-full h-32 object-cover rounded-md border"
-                          />
-                          <p className="text-xs text-gray-500 mt-1">Image uploaded successfully</p>
+                      {newsForm.images.length > 0 && (
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          {newsForm.images.map((imageUrl, index) => (
+                            <div key={index} className="relative">
+                              <img
+                                src={imageUrl}
+                                alt={`Preview ${index + 1}`}
+                                className="w-full h-32 object-cover rounded-md border"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(index)}
+                                className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full hover:bg-red-700"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
@@ -461,9 +485,7 @@ const Admin = () => {
         <BreakingNewsManager />
         <VideoUploadForm />
         <AudioUploadForm />
-
       </main>
-      <RadioPlayer/>
     </div>
   );
 };
