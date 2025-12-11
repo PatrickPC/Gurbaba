@@ -8,7 +8,7 @@ export interface NewsArticle {
   title: string;
   excerpt: string;
   content: string;
-  image: string | null;
+  images: string[];
   author: string;
   category: string;
   tags: string[];
@@ -63,7 +63,7 @@ export const useNewsData = () => {
     }
   };
 
-  const createArticle = async (article: Omit<NewsArticle, 'id' | 'published_at' | 'updated_at' | 'readTime'>) => {
+  const createArticle = async (article: Omit<NewsArticle, 'id' | 'published_at' | 'updated_at' | 'readTime' | 'views'>) => {
     try {
       const { data, error } = await supabase
         .from('news_articles')
@@ -71,7 +71,7 @@ export const useNewsData = () => {
           title: article.title,
           excerpt: article.excerpt,
           content: article.content,
-          image: article.image,
+          images: article.images,
           author: article.author,
           category: article.category,
           tags: article.tags

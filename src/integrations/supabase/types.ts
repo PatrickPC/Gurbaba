@@ -1,316 +1,175 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
 
-export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
-  }
-  public: {
-    Tables: {
-      audios: {
-        Row: {
-          audio_url: string
-          author: string
-          category: string
-          created_at: string
-          description: string | null
-          duration: string | null
-          id: string
-          tags: string[] | null
-          thumbnail: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          audio_url: string
-          author: string
-          category: string
-          created_at?: string
-          description?: string | null
-          duration?: string | null
-          id?: string
-          tags?: string[] | null
-          thumbnail?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          audio_url?: string
-          author?: string
-          category?: string
-          created_at?: string
-          description?: string | null
-          duration?: string | null
-          id?: string
-          tags?: string[] | null
-          thumbnail?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      breaking_news: {
-        Row: {
-          created_at: string
-          display_order: number | null
-          id: string
-          is_active: boolean
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          display_order?: number | null
-          id?: string
-          is_active?: boolean
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          display_order?: number | null
-          id?: string
-          is_active?: boolean
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      news_articles: {
-        Row: {
-          author: string
-          category: string
-          content: string
-          excerpt: string
-          id: string
-          image: string | null
-          published_at: string
-          tags: string[] | null
-          title: string
-          updated_at: string
-          views: number
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/Client';
+import { useToast } from '@/hooks/use-toast';
 
-
-        }
-        Insert: {
-          author: string
-          category: string
-          content: string
-          excerpt: string
-          id?: string
-          image?: string | null
-          published_at?: string
-          tags?: string[] | null
-          title: string
-          updated_at?: string
-          views?: number
-
-
-        }
-        Update: {
-          author?: string
-          category?: string
-          content?: string
-          excerpt?: string
-          id?: string
-          image?: string | null
-          published_at?: string
-          tags?: string[] | null
-          title?: string
-          updated_at?: string
-          views?: number
-
-
-        }
-        Relationships: []
-      }
-      videos: {
-        Row: {
-          author: string
-          category: string
-          created_at: string
-          description: string | null
-          duration: string | null
-          id: string
-          tags: string[] | null
-          thumbnail: string | null
-          title: string
-          updated_at: string
-          video_url: string
-        }
-        Insert: {
-          author: string
-          category: string
-          created_at?: string
-          description?: string | null
-          duration?: string | null
-          id?: string
-          tags?: string[] | null
-          thumbnail?: string | null
-          title: string
-          updated_at?: string
-          video_url: string
-        }
-        Update: {
-          author?: string
-          category?: string
-          created_at?: string
-          description?: string | null
-          duration?: string | null
-          id?: string
-          tags?: string[] | null
-          thumbnail?: string | null
-          title?: string
-          updated_at?: string
-          video_url?: string
-        }
-        Relationships: []
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      increment_article_views: {
-        Args: { article_id: string }
-        Returns: undefined
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
+export interface NewsArticle {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  images: string[];
+  author: string;
+  category: string;
+  tags: string[];
+  published_at: string;
+  updated_at: string;
+  views: number;
+  readTime?: string;
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+export const useNewsData = () => {
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+  const calculateReadTime = (content: string) => {
+    const words = content.split(' ').length;
+    const readTime = Math.ceil(words / 200);
+    return `${readTime} min read`;
+  };
 
-export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  const fetchArticles = async () => {
+    try {
+      console.log('Fetching articles from database...');
+      const { data, error } = await supabase
+        .from('news_articles')
+        .select('*')
+        .order('published_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
       }
-      ? R
-      : never
-    : never
 
-export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      console.log('Fetched articles:', data);
+
+      const articlesWithReadTime = data.map(article => ({
+        ...article,
+        readTime: calculateReadTime(article.content),
+        published_at: new Date(article.published_at).toLocaleDateString()
+      }));
+
+      setArticles(articlesWithReadTime);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load articles from database",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
+  };
 
-export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+  const createArticle = async (article: Omit<NewsArticle, 'id' | 'published_at' | 'updated_at' | 'readTime' | 'views'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('news_articles')
+        .insert([{
+          title: article.title,
+          excerpt: article.excerpt,
+          content: article.content,
+          images: article.images,
+          author: article.author,
+          category: article.category,
+          tags: article.tags
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newArticle = {
+        ...data,
+        readTime: calculateReadTime(data.content),
+        published_at: new Date(data.published_at).toLocaleDateString()
+      };
+
+      setArticles(prev => [newArticle, ...prev]);
+      toast({
+        title: "Success",
+        description: "Article created successfully",
+      });
+      return { success: true };
+    } catch (error) {
+      console.error('Error creating article:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create article",
+        variant: "destructive"
+      });
+      return { success: false, error };
     }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
+  };
 
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+  const getArticleById = (id: string) => {
+    return articles.find(article => article.id === id);
+  };
 
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  const getArticlesByCategory = (category: string) => {
+    console.log('Getting articles by category:', category);
+    console.log('Available articles:', articles);
+    
+    if (!category) {
+      console.log('No category provided, returning empty array');
+      return [];
+    }
+    
+    const filtered = articles.filter(article => {
+      const articleCategory = article.category.toLowerCase();
+      const searchCategory = category.toLowerCase();
+      
+      // Handle URL-formatted categories (with hyphens) - convert both ways
+      const normalizedArticleCategory = articleCategory.replace(/\s+&\s+/g, '-').replace(/\s+/g, '-');
+      const normalizedSearchCategory = searchCategory.replace(/\s+&\s+/g, '-').replace(/\s+/g, '-');
+      
+      // Also try converting hyphens back to spaces for matching
+      const articleCategoryWithSpaces = normalizedSearchCategory.replace(/-/g, ' ');
+      
+      console.log('Comparing:', {
+        articleCategory,
+        searchCategory,
+        normalizedArticleCategory,
+        normalizedSearchCategory,
+        articleCategoryWithSpaces
+      });
+      
+      return articleCategory === searchCategory || 
+             normalizedArticleCategory === normalizedSearchCategory ||
+             articleCategory === articleCategoryWithSpaces;
+    });
+    
+    console.log('Filtered articles:', filtered);
+    return filtered;
+  };
 
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const
+  const incrementArticleViews = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .rpc('increment_article_views' as any, { article_id: id });
+
+      if (error) throw error;
+      
+      // Refresh articles to get updated view count
+      await fetchArticles();
+    } catch (error) {
+      console.error('Error incrementing article views:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  return {
+    articles,
+    loading,
+    createArticle,
+    getArticleById,
+    getArticlesByCategory,
+    refreshArticles: fetchArticles,
+    incrementArticleViews
+  };
+};
