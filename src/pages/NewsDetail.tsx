@@ -1,18 +1,17 @@
+
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Eye } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import RadioPlayer from '@/components/RadioPlayer';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
-import { getPublishedDate, getReadTime } from '../utils/newsHelpers';
+import { getPublishedDate, getReadTime, getImages } from '../utils/newsHelpers';
 
 const NewsDetail = () => {
   const { id } = useParams();
   const { getArticleById, articles, loading, incrementArticleViews } = useNews();
   const viewCountedRef = useRef<string | null>(null);
-
   
   // Try to get article from database first, fallback to mock data
   const databaseArticle = getArticleById(id || '');
@@ -25,14 +24,13 @@ const NewsDetail = () => {
     news.id !== id && news.category === article?.category
   ).slice(0, 6);
 
-
   // Increment view count only once per article visit
   useEffect(() => {
     if (id && databaseArticle && viewCountedRef.current !== id) {
       viewCountedRef.current = id;
       incrementArticleViews(id);
     }
-    }, [id, databaseArticle, incrementArticleViews]);
+  }, [id, databaseArticle, incrementArticleViews]);
 
   if (loading) {
     return (
@@ -133,26 +131,57 @@ const NewsDetail = () => {
               </div>
             </div>
 
-            {/* Article Image */}
-            <div className="relative">
-              <img
-                src={article.image}
-                alt={article.title}
-                className="w-full h-64 md:h-96 object-cover"
-              />
-              <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 text-sm rounded">
-                Post Illustration
-              </div>
-            </div>
-
-            {/* Article Content */}
+            {/* Article Content with Interspersed Images */}
             <div className="p-6">
               <div className="prose max-w-none">
-                {article.content.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="mb-4 text-gray-800 leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
+                {(() => {
+                  const paragraphs = article.content.split('\n\n');
+                  const images = getImages(article);
+                  const content = [];
+                  
+                  paragraphs.forEach((paragraph, pIndex) => {
+                    // Add image before paragraph if available
+                    if (pIndex < images.length) {
+                      content.push(
+                        <div key={`image-${pIndex}`} className="relative my-6">
+                          <img
+                            src={images[pIndex]}
+                            alt={`${article.title} - Image ${pIndex + 1}`}
+                            className="w-full h-64 md:h-96 object-cover rounded-lg"
+                          />
+                          <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 text-sm rounded">
+                            Image {pIndex + 1} of {images.length}
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    // Add paragraph
+                    content.push(
+                      <p key={`para-${pIndex}`} className="mb-4 text-gray-800 leading-relaxed">
+                        {paragraph}
+                      </p>
+                    );
+                  });
+                  
+                  // Add remaining images if there are more images than paragraphs
+                  for (let i = paragraphs.length; i < images.length; i++) {
+                    content.push(
+                      <div key={`image-${i}`} className="relative my-6">
+                        <img
+                          src={images[i]}
+                          alt={`${article.title} - Image ${i + 1}`}
+                          className="w-full h-64 md:h-96 object-cover rounded-lg"
+                        />
+                        <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 text-sm rounded">
+                          Image {i + 1} of {images.length}
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  return content;
+                })()}
               </div>
               
               {/* Tags */}
@@ -202,7 +231,7 @@ const NewsDetail = () => {
                   <Link key={news.id} to={`/news/${news.id}`} className="block group">
                     <div className="flex gap-3">
                       <img
-                        src={news.image}
+                        src={getImages(news)[0] || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'}
                         alt={news.title}
                         className="w-20 h-16 object-cover rounded group-hover:opacity-80 transition-opacity"
                       />
@@ -233,7 +262,7 @@ const NewsDetail = () => {
               <Link key={news.id} to={`/news/${news.id}`} className="block group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <img
-                    src={news.image}
+                    src={getImages(news)[0] || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'}
                     alt={news.title}
                     className="w-full h-48 object-cover group-hover:opacity-90 transition-opacity"
                   />
@@ -259,7 +288,6 @@ const NewsDetail = () => {
       </main>
 
       <Footer />
-      <RadioPlayer/>
     </div>
   );
 };
