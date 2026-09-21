@@ -133,33 +133,57 @@ const NewsDetail = () => {
               </div>
             </div>
 
-              {/* Article Images */}
-            {getImages(article).length > 0 && (
-              <div className="space-y-4">
-                {getImages(article).map((imageUrl, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={imageUrl}
-                      alt={`${article.title} - Image ${index + 1}`}
-                      className="w-full h-64 md:h-96 object-cover"
-                    />
-                    <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 text-sm rounded">
-                      Image {index + 1} of {getImages(article).length}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-
-            {/* Article Content */}
+            {/* Article Content with Interspersed Images */}
             <div className="p-6">
               <div className="prose max-w-none">
-                {article.content.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="mb-4 text-gray-800 leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
+             {(() => {
+                  const paragraphs = article.content.split('\n\n');
+                  const images = getImages(article);
+                  const content = [];
+                  
+                  paragraphs.forEach((paragraph, pIndex) => {
+                    // Add image before paragraph if available
+                    if (pIndex < images.length) {
+                      content.push(
+                        <div key={`image-${pIndex}`} className="relative my-6">
+                          <img
+                            src={images[pIndex]}
+                            alt={`${article.title} - Image ${pIndex + 1}`}
+                            className="w-full h-64 md:h-96 object-cover rounded-lg"
+                          />
+                          <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 text-sm rounded">
+                            Image {pIndex + 1} of {images.length}
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    // Add paragraph
+                    content.push(
+                      <p key={`para-${pIndex}`} className="mb-4 text-gray-800 leading-relaxed">
+                        {paragraph}
+                      </p>
+                    );
+                  });
+                  
+                  // Add remaining images if there are more images than paragraphs
+                  for (let i = paragraphs.length; i < images.length; i++) {
+                    content.push(
+                      <div key={`image-${i}`} className="relative my-6">
+                        <img
+                          src={images[i]}
+                          alt={`${article.title} - Image ${i + 1}`}
+                          className="w-full h-64 md:h-96 object-cover rounded-lg"
+                        />
+                        <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 text-sm rounded">
+                          Image {i + 1} of {images.length}
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  return content;
+                })()}
               </div>
               
               {/* Tags */}
