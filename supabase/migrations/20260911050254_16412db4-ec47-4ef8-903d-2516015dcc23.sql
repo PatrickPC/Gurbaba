@@ -1,0 +1,1 @@
+ALTER TABLE public.news_articles ADD COLUMN IF NOT EXISTS audio_url text;

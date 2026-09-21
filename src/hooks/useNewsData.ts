@@ -14,8 +14,10 @@ export interface NewsArticle {
   published_at: string;
   updated_at: string;
   views: number;
+  audio_url?: string | null;
   readTime?: string;
 }
+
 
 export const useNewsData = () => {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
@@ -71,8 +73,10 @@ export const useNewsData = () => {
           content: article.content,
           images: article.images,          author: article.author,
           category: article.category,
-          tags: article.tags
+          tags: article.tags,
+          audio_url: article.audio_url || null
         }])
+        
         .select()
         .single();
 
