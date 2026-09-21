@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Eye } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Eye, Link2, Check } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import RadioPlayer from '@/components/RadioPlayer';
@@ -9,13 +9,16 @@ import { useNews } from '../contexts/NewsContext';
 import { getPublishedDate, getReadTime, getImages } from '../utils/newsHelpers';
 import { DEFAULT_NEWS_IMAGE } from '@/constants/images';
 
+
 const NewsDetail = () => {
   const { id } = useParams();
   const { getArticleById, articles, loading, incrementArticleViews } = useNews();
   const viewCountedRef = useRef<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   
   // Try to get article from database first, fallback to mock data
+
   const databaseArticle = getArticleById(id || '');
   const mockArticle = mockNews.find(news => news.id === id);
   const article = databaseArticle || mockArticle;
@@ -67,7 +70,61 @@ const NewsDetail = () => {
   const publishedDate = getPublishedDate(article);
   const readTime = getReadTime(article);
 
+   const shareUrl = typeof window !== 'undefined'
+
+    ? `${window.location.origin}/news/${article.id}`
+    : `/news/${article.id}`;
+  const shareText = `${article.title} | FM News Portal`;
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: article.title,
+          text: article.excerpt,
+          url: shareUrl,
+        });
+      } catch (err) {
+        // User cancelled or share failed
+      }
+    } else {
+      handleCopyLink();
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const shareToFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+  };
+
+  const shareToTwitter = () => {
+    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`, '_blank', 'width=600,height=400');
+  };
+
+  const shareToEmail = () => {
+    window.location.href = `mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(`${article.excerpt}\n\n${shareUrl}`)}`;
+  };
+
+
   return (
+
     <div className="min-h-screen bg-gray-50">
       <Header />
       
@@ -124,14 +181,29 @@ const NewsDetail = () => {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-gray-100 rounded-full">
-                    <Bookmark size={16} />
+
+                  <button
+                    onClick={handleCopyLink}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    aria-label={copied ? 'Link copied' : 'Copy link'}
+                    title={copied ? 'Link copied' : 'Copy link'}
+                  >
+                    {copied ? <Check size={16} className="text-green-600" /> : <Link2 size={16} />}
                   </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-full">
+
+                  <button
+                    onClick={handleNativeShare}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    aria-label="Share article"
+                    title="Share article"
+                  >
                     <Share2 size={16} />
                   </button>
+
                 </div>
+
               </div>
+
             </div>
 
             {/* Article Content with Interspersed Images */}
@@ -204,18 +276,38 @@ const NewsDetail = () => {
               {/* Social Sharing */}
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <h3 className="text-lg font-semibold mb-4">Share this article</h3>
-                <div className="flex gap-4">
-                  <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={shareToFacebook}
+                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                    aria-label="Share on Facebook"
+                  >
                     <Facebook size={16} />
                     Share
                   </button>
-                  <button className="flex items-center gap-2 bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors">
+                  <button
+                    onClick={shareToTwitter}
+                    className="flex items-center gap-2 bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors"
+                    aria-label="Share on Twitter"
+                  >
                     <Twitter size={16} />
                     Tweet
                   </button>
-                  <button className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors">
+                   <button
+                    onClick={shareToEmail}
+                    className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
+                    aria-label="Share via Email"
+                  >
                     <Mail size={16} />
                     Email
+                  </button>
+                  <button
+                    onClick={handleCopyLink}
+                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+                    aria-label="Copy article link"
+                  >
+                    {copied ? <Check size={16} /> : <Link2 size={16} />}
+                    {copied ? 'Copied!' : 'Copy Link'}
                   </button>
                 </div>
               </div>
