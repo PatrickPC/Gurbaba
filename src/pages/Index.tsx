@@ -8,7 +8,7 @@ import Advertisement from '../components/Advertisement';
 import RadioPlayer from '../components/RadioPlayer';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
-import { getPublishedDate } from '../utils/newsHelpers';
+import { getPublishedDate, getImage } from '../utils/newsHelpers';
 
 const Index = () => {
   const { articles, loading } = useNews();
@@ -131,7 +131,7 @@ const Index = () => {
               {categoryNews['Science & Technology'].slice(0, 1).map((article) => (
                 <div key={article.id} className="group">
                   <img
-                    src={article.image}
+                   src={getImage(article)}
                     alt={article.title}
                     className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
                   />
@@ -161,7 +161,7 @@ const Index = () => {
               {categoryNews.Sports.slice(0, 1).map((article) => (
                 <div key={article.id} className="group">
                   <img
-                    src={article.image}
+                    src={getImage(article)}
                     alt={article.title}
                     className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
                   />
@@ -189,7 +189,7 @@ const Index = () => {
               {categoryNews.World.slice(0, 1).map((article) => (
                 <div key={article.id} className="group">
                   <img
-                    src={article.image}
+                     src={getImage(article)}
                     alt={article.title}
                     className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
                   />
@@ -216,7 +216,7 @@ const Index = () => {
               {categoryNews.Features.slice(0, 1).map((article) => (
                 <div key={article.id} className="group">
                   <img
-                    src={article.image}
+                    src={getImage(article)}
                     alt={article.title}
                     className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
                   />
@@ -246,7 +246,7 @@ const Index = () => {
               {categoryNews.Columns.slice(0, 1).map((article) => (
                 <div key={article.id} className="group">
                   <img
-                    src={article.image}
+                   src={getImage(article)}
                     alt={article.title}
                     className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
                   />
@@ -272,7 +272,7 @@ const Index = () => {
               {categoryNews.Editorial.slice(0, 1).map((article) => (
                 <div key={article.id} className="group">
                   <img
-                    src={article.image}
+                     src={getImage(article)}
                     alt={article.title}
                     className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
                   />
@@ -298,7 +298,7 @@ const Index = () => {
               {categoryNews.Interviews.slice(0, 1).map((article) => (
                 <div key={article.id} className="group">
                   <img
-                    src={article.image}
+                    src={getImage(article)}
                     alt={article.title}
                     className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
                   />
@@ -326,7 +326,7 @@ const Index = () => {
             {categoryNews.Politics.slice(0, 1).map((article) => (
                 <div key={article.id} className="group">
                   <img
-                    src={article.image}
+                    src={getImage(article)}
                     alt={article.title}
                     className="w-full h-32 object-cover rounded mb-3 group-hover:opacity-80 transition-opacity"
                   />
@@ -371,7 +371,7 @@ const Index = () => {
                   {articles.slice(0, 3).map((article) => (
                     <div key={article.id} className="flex gap-4 group">
                       <img
-                        src={article.image}
+                        src={getImage(article)}
                         alt={article.title}
                         className="w-24 h-16 object-cover rounded group-hover:opacity-80 transition-opacity"
                       />

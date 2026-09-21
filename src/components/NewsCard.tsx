@@ -7,7 +7,8 @@ interface NewsCardProps {
   id: string;
   title: string;
   excerpt: string;
-  image: string | null;
+  image?: string | null;
+  images?: string[];
   author: string;
   published_at?: string;
   publishedAt?: string;
@@ -22,6 +23,7 @@ const NewsCard = ({
   title, 
   excerpt, 
   image, 
+  images,
   author, 
   published_at,
   publishedAt, 
@@ -31,8 +33,7 @@ const NewsCard = ({
   featured = false 
 }: NewsCardProps) => {
   const displayDate = published_at || publishedAt || 'Unknown date';
-  const displayImage = image || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800';
-
+  const displayImage = (images && images.length > 0 ? images[0] : image) || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800';
   return (
     <Link to={`/news/${id}`} className="block group">
       <article className={`bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow ${featured ? 'md:flex' : ''}`}>

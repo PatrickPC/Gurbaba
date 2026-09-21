@@ -31,8 +31,7 @@ const VideoUploadForm = () => {
   const queryClient = useQueryClient();
 
   const categories = [
-    'News Report', 'Interview', 'Documentary', 'Sports', 'Entertainment', 
-    'Politics', 'Technology', 'Culture', 'Breaking News', 'Live Coverage'
+        'Video', 'Interview'
   ];
 
   const uploadFileToStorage = async (file: File, bucket: string, folder: string): Promise<string | null> => {

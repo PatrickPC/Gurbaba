@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 import RadioPlayer from '@/components/RadioPlayer';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
-import { getPublishedDate, getReadTime } from '../utils/newsHelpers';
+import { getPublishedDate, getReadTime, getImages } from '../utils/newsHelpers';
 
 const NewsDetail = () => {
   const { id } = useParams();
@@ -133,17 +133,24 @@ const NewsDetail = () => {
               </div>
             </div>
 
-            {/* Article Image */}
-            <div className="relative">
-              <img
-                src={article.image}
-                alt={article.title}
-                className="w-full h-64 md:h-96 object-cover"
-              />
-              <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 text-sm rounded">
-                Post Illustration
+              {/* Article Images */}
+            {getImages(article).length > 0 && (
+              <div className="space-y-4">
+                {getImages(article).map((imageUrl, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={imageUrl}
+                      alt={`${article.title} - Image ${index + 1}`}
+                      className="w-full h-64 md:h-96 object-cover"
+                    />
+                    <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 text-sm rounded">
+                      Image {index + 1} of {getImages(article).length}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
+            
 
             {/* Article Content */}
             <div className="p-6">
@@ -202,7 +209,7 @@ const NewsDetail = () => {
                   <Link key={news.id} to={`/news/${news.id}`} className="block group">
                     <div className="flex gap-3">
                       <img
-                        src={news.image}
+                        src={getImages(news)[0] || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'}
                         alt={news.title}
                         className="w-20 h-16 object-cover rounded group-hover:opacity-80 transition-opacity"
                       />
@@ -233,7 +240,7 @@ const NewsDetail = () => {
               <Link key={news.id} to={`/news/${news.id}`} className="block group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <img
-                    src={news.image}
+                    src={getImages(news)[0] || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'}
                     alt={news.title}
                     className="w-full h-48 object-cover group-hover:opacity-90 transition-opacity"
                   />

@@ -90,7 +90,7 @@ export type Database = {
           content: string
           excerpt: string
           id: string
-          image: string | null
+          images: string[] | null          
           published_at: string
           tags: string[] | null
           title: string
@@ -105,7 +105,7 @@ export type Database = {
           content: string
           excerpt: string
           id?: string
-          image?: string | null
+          images: string[] | null          
           published_at?: string
           tags?: string[] | null
           title: string
@@ -120,8 +120,8 @@ export type Database = {
           content?: string
           excerpt?: string
           id?: string
-          image?: string | null
-          published_at?: string
+          images?: string[] | null         
+           published_at?: string
           tags?: string[] | null
           title?: string
           updated_at?: string

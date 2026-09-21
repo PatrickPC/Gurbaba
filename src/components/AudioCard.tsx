@@ -9,9 +9,10 @@ interface AudioCardProps {
   author: string;
   publishedDate: string;
   audioUrl: string;
+  category?: string;
 }
 
-const AudioCard = ({ id, title, thumbnail, duration = '0:00', author, publishedDate, audioUrl }: AudioCardProps) => {
+const AudioCard = ({ id, title, thumbnail, duration = '0:00', author, publishedDate, audioUrl, category }: AudioCardProps) => {  
   const [isPlaying, setIsPlaying] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -57,6 +58,11 @@ const AudioCard = ({ id, title, thumbnail, duration = '0:00', author, publishedD
         {title}
       </h3>
       <div className="text-sm text-gray-600">
+        {category && (
+          <span className="inline-block bg-red-100 text-red-600 text-xs px-2 py-1 rounded mb-2">
+            {category}
+          </span>
+        )}
         <p className="mb-1">By {author}</p>
         <p>{publishedDate}</p>
       </div>
