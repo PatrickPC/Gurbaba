@@ -1,6 +1,8 @@
 
 import { Play } from 'lucide-react';
 import { useState } from 'react';
+import { DEFAULT_VIDEO_THUMBNAIL } from '@/constants/images';
+
 
 interface VideoCardProps {
   id: string;
@@ -43,7 +45,7 @@ const VideoCard = ({ id, title, thumbnail, duration, author, publishedDate, vide
 
   // Fallback image if thumbnail is not available or fails to load
   const displayThumbnail = imageError || !thumbnail 
-    ? 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=800'
+    ? DEFAULT_VIDEO_THUMBNAIL
     : thumbnail;
 
   return (

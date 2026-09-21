@@ -7,6 +7,7 @@ import RadioPlayer from '@/components/RadioPlayer';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
 import { getPublishedDate, getReadTime, getImages } from '../utils/newsHelpers';
+import { DEFAULT_NEWS_IMAGE } from '@/constants/images';
 
 const NewsDetail = () => {
   const { id } = useParams();
@@ -233,7 +234,7 @@ const NewsDetail = () => {
                   <Link key={news.id} to={`/news/${news.id}`} className="block group">
                     <div className="flex gap-3">
                       <img
-                        src={getImages(news)[0] || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'}
+                        src={getImages(news)[0] || DEFAULT_NEWS_IMAGE}
                         alt={news.title}
                         className="w-20 h-16 object-cover rounded group-hover:opacity-80 transition-opacity"
                       />
@@ -264,7 +265,7 @@ const NewsDetail = () => {
               <Link key={news.id} to={`/news/${news.id}`} className="block group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <img
-                    src={getImages(news)[0] || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'}
+                    src={getImages(news)[0] || DEFAULT_NEWS_IMAGE}
                     alt={news.title}
                     className="w-full h-48 object-cover group-hover:opacity-90 transition-opacity"
                   />

@@ -180,7 +180,7 @@ const VideoUploadForm = () => {
         author: videoForm.author,
         category: videoForm.category,
         video_url: videoUrl,
-        thumbnail: videoForm.thumbnail || 'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=800',
+        thumbnail: videoForm.thumbnail || '/images/default-placeholder.png',
         tags: tagsArray,
         duration: '00:00'
       };

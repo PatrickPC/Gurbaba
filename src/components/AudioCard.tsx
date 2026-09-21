@@ -1,5 +1,6 @@
 import { Play } from 'lucide-react';
 import { useState } from 'react';
+const DEFAULT_AUDIO_THUMBNAIL = '/placeholder.svg';
 
 interface AudioCardProps {
   id: string;
@@ -20,7 +21,7 @@ const AudioCard = ({ id, title, thumbnail, duration = '0:00', author, publishedD
   const handleImageError = () => setImageError(true);
 
   const displayThumbnail = imageError || !thumbnail
-    ? 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800'
+     ? DEFAULT_AUDIO_THUMBNAIL
     : thumbnail;
 
   return (

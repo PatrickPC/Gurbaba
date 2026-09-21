@@ -1,6 +1,9 @@
 
 import { Link } from 'react-router-dom';
 import { Clock, User, Eye } from 'lucide-react';
+import { DEFAULT_NEWS_IMAGE, DEFAULT_VIDEO_THUMBNAIL } from '@/constants/images';
+
+
 
 
 interface NewsCardProps {
@@ -33,7 +36,7 @@ const NewsCard = ({
   featured = false 
 }: NewsCardProps) => {
   const displayDate = published_at || publishedAt || 'Unknown date';
-  const displayImage = (images && images.length > 0 ? images[0] : image) || 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800';
+    const displayImage = (images && images.length > 0 ? images[0] : image) || DEFAULT_NEWS_IMAGE;
   return (
     <Link to={`/news/${id}`} className="block group">
       <article className={`bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow ${featured ? 'md:flex' : ''}`}>
@@ -44,7 +47,7 @@ const NewsCard = ({
             className="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               // Fallback to default image if uploaded image fails to load
-              e.currentTarget.src = 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800';
+              e.currentTarget.src = DEFAULT_NEWS_IMAGE;
             }}
           />
           <div className="absolute top-4 left-4">

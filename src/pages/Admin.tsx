@@ -218,7 +218,7 @@ const Admin = () => {
         content: newsForm.content,
         author: newsForm.author,
         category: newsForm.category,
-        images: newsForm.images.length > 0 ? newsForm.images : ['https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800'],
+        images: newsForm.images.length > 0 ? newsForm.images : ['/images/default-placeholder.png'],
         tags: tagsArray
       };
 

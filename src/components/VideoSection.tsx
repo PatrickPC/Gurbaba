@@ -86,6 +86,8 @@
 import { useQuery } from '@tanstack/react-query';
 import VideoCard from './VideoCard';
 import { supabase } from '../integrations/supabase/Client';
+import { DEFAULT_VIDEO_THUMBNAIL } from '@/constants/images';
+
 
 const VideoSection = () => {
   const { data: videos, isLoading, error } = useQuery({
@@ -150,7 +152,7 @@ const VideoSection = () => {
               key={video.id}
               id={video.id}
               title={video.title}
-              thumbnail={video.thumbnail || 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=800'}
+             thumbnail={video.thumbnail || DEFAULT_VIDEO_THUMBNAIL}
               duration={video.duration || '0:00'}
               author={video.author}
               publishedDate={new Date(video.created_at).toLocaleDateString()}
