@@ -30,7 +30,7 @@ const AdminEdit = () => {
   const { toast } = useToast();
 
   const categories = [
-     'Local', 'National', 'Agriculture', 'Culture & Lifestyle', 'Foreign', 'Sports'
+     'Local', 'National', 'Agriculture', 'Culture and Lifestyle', 'Foreign', 'Sports'
   ];
 
   const uploadImageToStorage = async (file: File): Promise<string | null> => {

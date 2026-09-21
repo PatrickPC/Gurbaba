@@ -148,12 +148,14 @@ const CategoryPage = () => {
                 id={news.id}
                 title={news.title}
                 excerpt={news.excerpt}
-                image={news.image}
+                image={'image' in news ? news.image : undefined}
+                images={'images' in news ? news.images : undefined}
                 author={news.author}
                 published_at={'published_at' in news ? news.published_at : undefined}
                 publishedAt={'publishedAt' in news ? news.publishedAt : undefined}
                 category={news.category}
                 readTime={'readTime' in news ? news.readTime : undefined}
+                views={'views' in news ? news.views : undefined}
               />
             ))}
           </div>

@@ -5,7 +5,7 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Upload, Music2, Eye } from 'lucide-react';
+import { Upload, Music2, Eye, Link } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { supabase } from '../integrations/supabase/Client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,13 +17,15 @@ const AudioUploadForm = () => {
     author: '',
     category: '',
     thumbnail: '',
-    tags: ''
+    tags: '',
+    audioUrl: ''
   });
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
+  const [uploadMethod, setUploadMethod] = useState<'file' | 'link'>('link');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -92,6 +94,21 @@ const AudioUploadForm = () => {
     }
   };
 
+  const isSpotifyUrl = (url: string): boolean => {
+    return url.includes('spotify.com') || url.includes('open.spotify.com');
+  };
+
+  const isYouTubeUrl = (url: string): boolean => {
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  };
+
+  const getAudioPlatform = (url: string): string => {
+    if (isSpotifyUrl(url)) return 'Spotify';
+    if (isYouTubeUrl(url)) return 'YouTube';
+    return 'External Link';
+  };
+
+
   const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -100,16 +117,28 @@ const AudioUploadForm = () => {
       return;
     }
 
-    if (!audioFile) {
+    if (uploadMethod === 'file' && !audioFile) {
       toast({ title: 'Missing Audio File', description: 'Please select an audio file to upload.', variant: 'destructive' });
+      return;
+    }
+
+     if (uploadMethod === 'link' && !audioForm.audioUrl) {
+      toast({ title: 'Missing Audio URL', description: 'Please enter an audio URL (YouTube or Spotify).', variant: 'destructive' });
       return;
     }
 
     setIsUploading(true);
 
     try {
-      let audioUrl = await uploadFileToStorage(audioFile, 'audios', 'audio-files');
-      if (!audioUrl) throw new Error('Failed to upload audio');
+      let audioUrl = '';
+
+      if (uploadMethod === 'file') {
+        audioUrl = await uploadFileToStorage(audioFile!, 'audios', 'audio-files') || '';
+        if (!audioUrl) throw new Error('Failed to upload audio');
+      } else {
+        audioUrl = audioForm.audioUrl;
+        console.log('Using external audio URL:', audioUrl);
+      }
 
       const tagsArray = audioForm.tags
         ? audioForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
@@ -126,6 +155,7 @@ const AudioUploadForm = () => {
         duration: '00:00'
       };
 
+      console.log('Inserting audio data:', audioData);
       const { data, error } = await supabase
         .from('audios')
         .insert([audioData])
@@ -137,7 +167,7 @@ const AudioUploadForm = () => {
 
       toast({ title: 'Audio Published!', description: 'Your audio has been uploaded and published successfully.' });
 
-      setAudioForm({ title: '', description: '', author: '', category: '', thumbnail: '', tags: '' });
+      setAudioForm({ title: '', description: '', author: '', category: '', thumbnail: '', tags: '', audioUrl: '' });
       setAudioFile(null);
       setThumbnailFile(null);
       if (audioPreviewUrl) URL.revokeObjectURL(audioPreviewUrl);
@@ -151,7 +181,10 @@ const AudioUploadForm = () => {
   };
 
   const handlePreview = () => {
-    if (audioPreviewUrl && audioFile) {
+     if (uploadMethod === 'link' && audioForm.audioUrl) {
+      // Open the external URL in new tab
+      window.open(audioForm.audioUrl, '_blank');
+    } else if (uploadMethod === 'file' && audioPreviewUrl && audioFile) {
       const previewWindow = window.open('', '_blank', 'width=600,height=200');
       if (previewWindow) {
         previewWindow.document.write(`
@@ -176,7 +209,11 @@ const AudioUploadForm = () => {
         previewWindow.document.close();
       }
     } else {
-      toast({ title: 'No Audio to Preview', description: 'Please select an audio file to preview.', variant: 'destructive' });
+      toast({ 
+        title: 'No Audio to Preview', 
+        description: uploadMethod === 'link' ? 'Please enter an audio URL to preview.' : 'Please select an audio file to preview.', 
+        variant: 'destructive' 
+      });
     }
   };
 
@@ -193,6 +230,35 @@ const AudioUploadForm = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handlePublish} className="space-y-6">
+           {/* Upload Method Toggle */}
+          <div className="mb-6">
+            <Label className="text-base font-semibold">Upload Method</Label>
+            <div className="flex gap-4 mt-2">
+              <button
+                type="button"
+                onClick={() => setUploadMethod('link')}
+                className={`px-4 py-2 rounded-md flex items-center gap-2 ${
+                  uploadMethod === 'link' 
+                    ? 'bg-red-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                <Link size={16} />
+                URL Link (Recommended)
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadMethod('file')}
+                className={`px-4 py-2 rounded-md ${
+                  uploadMethod === 'file' 
+                    ? 'bg-red-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                File Upload (50MB max)
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
@@ -222,14 +288,36 @@ const AudioUploadForm = () => {
               </div>
             </div>
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="audio-file">Audio File *</Label>
-                <Input id="audio-file" type="file" accept="audio/*" onChange={handleAudioUpload} className="mb-2" disabled={isUploading} />
-                {audioFile && (
-                  <p className="text-sm text-green-600">Selected: {audioFile.name} ({(audioFile.size / (1024 * 1024)).toFixed(2)} MB)</p>
-                )}
-                <p className="text-sm text-gray-600">Maximum file size: 50MB </p>
-              </div>
+              {uploadMethod === 'link' ? (
+                <div>
+                  <Label htmlFor="audio-url">Audio URL *</Label>
+                  <Input
+                    id="audio-url"
+                    type="url"
+                    placeholder="https://open.spotify.com/episode/... or https://youtube.com/watch?v=..."
+                    value={audioForm.audioUrl}
+                    onChange={(e) => setAudioForm({ ...audioForm, audioUrl: e.target.value })}
+                    className="mb-2"
+                  />
+                  {audioForm.audioUrl && (
+                    <p className="text-sm text-green-600">
+                      Platform detected: {getAudioPlatform(audioForm.audioUrl)}
+                    </p>
+                  )}
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Paste a Spotify episode/podcast URL or YouTube audio URL to link instead of uploading a file
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <Label htmlFor="audio-file">Audio File *</Label>
+                  <Input id="audio-file" type="file" accept="audio/*" onChange={handleAudioUpload} className="mb-2" disabled={isUploading} />
+                  {audioFile && (
+                    <p className="text-sm text-green-600">Selected: {audioFile.name} ({(audioFile.size / (1024 * 1024)).toFixed(2)} MB)</p>
+                  )}
+                  <p className="text-sm text-muted-foreground">Maximum file size: 50MB (Supabase free plan limit)</p>
+                </div>
+              )}
               <div>
                 <Label htmlFor="audio-thumbnail">Thumbnail Image</Label>
                 <Input id="audio-thumbnail" type="file" accept="image/*" onChange={handleThumbnailUpload} className="mb-2" disabled={isUploadingThumbnail} />
@@ -247,7 +335,13 @@ const AudioUploadForm = () => {
             </div>
           </div>
           <div className="flex gap-4 pt-4">
-            <Button type="button" variant="outline" onClick={handlePreview} className="flex items-center gap-2" disabled={!audioFile}>
+             <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handlePreview} 
+              className="flex items-center gap-2" 
+              disabled={uploadMethod === 'file' ? !audioFile : !audioForm.audioUrl}
+            >
               <Eye size={16} />
               Preview Audio
             </Button>
