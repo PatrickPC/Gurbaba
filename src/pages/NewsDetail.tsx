@@ -122,6 +122,18 @@ const NewsDetail = () => {
     window.location.href = `mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(`${article.excerpt}\n\n${shareUrl}`)}`;
   };
 
+  // Build the right player for an attached audio: YouTube embed, Spotify embed, or a plain audio player
+  const audioUrl = databaseArticle?.audio_url;
+  const getYouTubeEmbed = (url: string): string | null => {
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  };
+  const getSpotifyEmbed = (url: string): string | null => {
+    const match = url.match(/open\.spotify\.com\/(episode|track|show|playlist|album)\/([\w]+)/);
+    return match ? `https://open.spotify.com/embed/${match[1]}/${match[2]}` : null;
+  };
+  const youtubeEmbed = audioUrl ? getYouTubeEmbed(audioUrl) : null;
+  const spotifyEmbed = audioUrl ? getSpotifyEmbed(audioUrl) : null;
 
   return (
 
@@ -258,6 +270,37 @@ const NewsDetail = () => {
                   return content;
                 })()}
               </div>
+
+                  {/* Attached Audio (only shown on the detail page when present) */}
+              {audioUrl && (
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold mb-4">Listen to this article</h3>
+                  {youtubeEmbed ? (
+                    <div className="aspect-video w-full">
+                      <iframe
+                        src={youtubeEmbed}
+                        title={`${article.title} - audio`}
+                        className="w-full h-full rounded-lg"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  ) : spotifyEmbed ? (
+                    <iframe
+                      src={spotifyEmbed}
+                      title={`${article.title} - audio`}
+                      className="w-full rounded-lg"
+                      height="152"
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <audio controls className="w-full" src={audioUrl}>
+                      Your browser does not support the audio element.
+                    </audio>
+                  )}
+                </div>
+              )}
               
               {/* Tags */}
               <div className="mt-8 pt-6 border-t border-gray-200">

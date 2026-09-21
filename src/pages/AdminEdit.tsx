@@ -21,10 +21,12 @@ const AdminEdit = () => {
     author: '',
     category: '',
     images: [] as string[],
-    tags: ''
+     tags: '',
+    audio_url: ''
   });
     const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingAudio, setIsUploadingAudio] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -92,6 +94,35 @@ const AdminEdit = () => {
     }
   };
 
+
+   const handleArticleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Audio file must be less than 50MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsUploadingAudio(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `article-audio/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const { error } = await supabase.storage.from('audios').upload(filePath, file, { cacheControl: '3600', upsert: true });
+      if (error) throw error;
+      const { data: { publicUrl } } = supabase.storage.from('audios').getPublicUrl(filePath);
+      setNewsForm(prev => ({ ...prev, audio_url: publicUrl }));
+      toast({ title: "Audio Uploaded", description: "Audio attached to this article." });
+    } catch (error) {
+      console.error('Audio upload error:', error);
+      toast({ title: "Upload Failed", description: "Failed to upload audio.", variant: "destructive" });
+    } finally {
+      setIsUploadingAudio(false);
+    }
+  };
+
   const handleRemoveImage = (index: number) => {
     setNewsForm(prev => ({
       ...prev,
@@ -128,7 +159,8 @@ const AdminEdit = () => {
         author: data.author,
         category: data.category,
         images: data.images || [],
-        tags: data.tags ? data.tags.join(', ') : ''
+        tags: data.tags ? data.tags.join(', ') : '',
+        audio_url: data.audio_url || ''
       });
     } catch (error) {
       console.error('Error fetching article:', error);
@@ -181,6 +213,7 @@ const AdminEdit = () => {
           category: newsForm.category,
           images: newsForm.images.length > 0 ? newsForm.images : ['/images/default-placeholder.png'],
           tags: tagsArray,
+          audio_url: newsForm.audio_url.trim() || null,
           updated_at: new Date().toISOString()
         })
         .eq('id', id);
@@ -337,6 +370,41 @@ const AdminEdit = () => {
                       )}
                     </div>
                   </div>
+
+
+                     <div>
+                    <Label htmlFor="article-audio">Audio (optional)</Label>
+                    <Input
+                      id="article-audio"
+                      type="file"
+                      accept="audio/*"
+                      onChange={handleArticleAudioUpload}
+                      className="mb-2"
+                      disabled={isUploadingAudio}
+                    />
+                    {isUploadingAudio && <p className="text-sm text-blue-600">Uploading audio...</p>}
+                    <Input
+                      placeholder="Or paste an audio link (YouTube / Spotify / MP3 URL)"
+                      value={newsForm.audio_url}
+                      onChange={(e) => setNewsForm({ ...newsForm, audio_url: e.target.value })}
+                    />
+                    {newsForm.audio_url && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <p className="text-sm text-green-600 truncate flex-1">{newsForm.audio_url}</p>
+                        <button
+                          type="button"
+                          onClick={() => setNewsForm({ ...newsForm, audio_url: '' })}
+                          className="text-red-600 text-sm hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-500 mt-1">
+                      If added, the audio player appears only on the full news page.
+                    </p>
+                  </div>
+
 
                   <div>
                     <Label htmlFor="excerpt">Description/Excerpt *</Label>
