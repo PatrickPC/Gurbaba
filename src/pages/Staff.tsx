@@ -140,11 +140,19 @@ const Staff = () => {
           {staffMembers.map((member) => (
             <Card key={member.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="text-center">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-                />
+                  <div className="w-24 h-24 rounded-full mx-auto mb-4 bg-gray-200 flex items-center justify-center overflow-hidden">
+                  {member.image && member.image !== "/placeholder.svg" ? (
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-3xl font-bold text-gray-500">
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  )}
+                </div>
                 <CardTitle className="text-xl text-gray-900">{member.name}</CardTitle>
                 <p className="text-red-600 font-semibold">{member.position}</p>
                 <p className="text-sm text-gray-500">{member.department} Department</p>
