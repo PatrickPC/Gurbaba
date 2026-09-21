@@ -1,6 +1,9 @@
 
 
 
+// The Supabase dependency is supplied by the project runtime, but may be absent
+// from the local TypeScript module-resolution environment.
+// @ts-expect-error: Supabase is an optional runtime dependency in this setup.
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 

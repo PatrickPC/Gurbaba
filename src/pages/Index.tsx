@@ -110,7 +110,7 @@ const Index = () => {
         {articles.length > 0 && (
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-red-600 mb-6 border-b-2 border-red-600 pb-2">
-              LATEST NEWS ({articles.length} articles)
+            LATEST NEWS {/*  ({articles.length} articles) */}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {articles.slice(0, 6).map((news) => (
@@ -122,10 +122,10 @@ const Index = () => {
 
         {/* Four Column Category Sections */}
         <section className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
-          {/* Science & Technology */}
+          {/* Local News */}
           <div>
             <h2 className="text-lg font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
-              SCIENCE & TECHNOLOGY
+              LOCAL NEWS
             </h2>
             <div className="space-y-4">
               {categoryNews['Science & Technology'].slice(0, 1).map((article) => (
