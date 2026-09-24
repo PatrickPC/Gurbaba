@@ -9,6 +9,16 @@ import { Upload, Music2, Eye, Link } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { supabase } from '../integrations/supabase/Client';
 import { useQueryClient } from '@tanstack/react-query';
+import {
+  uploadToBucket,
+  readMediaDuration,
+  getMediaPlatform,
+  isValidHttpUrl,
+  MAX_AUDIO_SIZE_MB,
+  MAX_IMAGE_SIZE_MB,
+  checkFileSize,
+} from '../utils/mediaUpload';
+import { DEFAULT_NEWS_IMAGE } from '@/constants/images';
 
 const AudioUploadForm = () => {
   const [audioForm, setAudioForm] = useState({
@@ -21,7 +31,7 @@ const AudioUploadForm = () => {
     audioUrl: ''
   });
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [audioDuration, setAudioDuration] = useState('00:00');
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
@@ -34,80 +44,48 @@ const AudioUploadForm = () => {
     'Documentary', 'Report', 'Culture', 'Technology', 'Sports'
   ];
 
-  const uploadFileToStorage = async (file: File, bucket: string, folder: string): Promise<string | null> => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${folder}/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(filePath);
-
-      return publicUrl;
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      return null;
-    }
-  };
-
   const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 50 * 1024 * 1024) {
-        toast({
-          title: 'File Too Large',
-          description: 'Audio file must be less than 50MB on the free plan.',
-          variant: 'destructive'
-        });
-        return;
-      }
-      setAudioFile(file);
-      const previewUrl = URL.createObjectURL(file);
-      setAudioPreviewUrl(previewUrl);
-      toast({ title: 'Audio Selected', description: `Selected audio: ${file.name}` });
+    if (!file) return;
+
+    const sizeError = checkFileSize(file, MAX_AUDIO_SIZE_MB);
+    if (sizeError) {
+      e.target.value = '';
+      toast({ title: 'File Too Large', description: sizeError, variant: 'destructive' });
+      return;
     }
+
+    setAudioFile(file);
+    if (audioPreviewUrl) URL.revokeObjectURL(audioPreviewUrl);
+    setAudioPreviewUrl(URL.createObjectURL(file));
+    setAudioDuration(await readMediaDuration(file));
+    toast({ title: 'Audio Selected', description: `Selected audio: ${file.name}` });
   };
 
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setThumbnailFile(file);
-      setIsUploadingThumbnail(true);
-      const uploadedUrl = await uploadFileToStorage(file, 'audio-thumbnails', 'thumbnails');
-      if (uploadedUrl) {
-        setAudioForm({ ...audioForm, thumbnail: uploadedUrl });
-        toast({ title: 'Thumbnail Uploaded', description: 'Thumbnail uploaded successfully.' });
-      } else {
-        toast({ title: 'Upload Failed', description: 'Failed to upload thumbnail.', variant: 'destructive' });
-      }
-      setIsUploadingThumbnail(false);
+    if (!file) return;
+
+    setIsUploadingThumbnail(true);
+    const { url, error } = await uploadToBucket(file, 'audio-thumbnails', 'thumbnails', MAX_IMAGE_SIZE_MB);
+    setIsUploadingThumbnail(false);
+    e.target.value = '';
+
+    if (!url) {
+      toast({ title: 'Upload Failed', description: error, variant: 'destructive' });
+      return;
     }
+    setAudioForm(prev => ({ ...prev, thumbnail: url }));
+    toast({ title: 'Thumbnail Uploaded', description: 'Thumbnail uploaded successfully.' });
   };
 
-  const isSpotifyUrl = (url: string): boolean => {
-    return url.includes('spotify.com') || url.includes('open.spotify.com');
+  const resetForm = () => {
+    setAudioForm({ title: '', description: '', author: '', category: '', thumbnail: '', tags: '', audioUrl: '' });
+    setAudioFile(null);
+    setAudioDuration('00:00');
+    if (audioPreviewUrl) URL.revokeObjectURL(audioPreviewUrl);
+    setAudioPreviewUrl(null);
   };
-
-  const isYouTubeUrl = (url: string): boolean => {
-    return url.includes('youtube.com') || url.includes('youtu.be');
-  };
-
-  const getAudioPlatform = (url: string): string => {
-    if (isSpotifyUrl(url)) return 'Spotify';
-    if (isYouTubeUrl(url)) return 'YouTube';
-    return 'External Link';
-  };
-
 
   const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,66 +100,63 @@ const AudioUploadForm = () => {
       return;
     }
 
-     if (uploadMethod === 'link' && !audioForm.audioUrl) {
-      toast({ title: 'Missing Audio URL', description: 'Please enter an audio URL (YouTube or Spotify).', variant: 'destructive' });
-      return;
+    if (uploadMethod === 'link') {
+      if (!audioForm.audioUrl) {
+        toast({ title: 'Missing Audio URL', description: 'Please enter an audio URL (YouTube or Spotify).', variant: 'destructive' });
+        return;
+      }
+      if (!isValidHttpUrl(audioForm.audioUrl)) {
+        toast({ title: 'Invalid Audio URL', description: 'Please enter a valid link starting with https://', variant: 'destructive' });
+        return;
+      }
     }
 
     setIsUploading(true);
 
     try {
-      let audioUrl = '';
+      let audioUrl = audioForm.audioUrl.trim();
 
       if (uploadMethod === 'file') {
-        audioUrl = await uploadFileToStorage(audioFile!, 'audios', 'audio-files') || '';
-        if (!audioUrl) throw new Error('Failed to upload audio');
-      } else {
-        audioUrl = audioForm.audioUrl;
-        console.log('Using external audio URL:', audioUrl);
+        const result = await uploadToBucket(audioFile!, 'audios', 'audio-files', MAX_AUDIO_SIZE_MB);
+        if (!result.url) throw new Error(result.error);
+        audioUrl = result.url;
       }
 
       const tagsArray = audioForm.tags
         ? audioForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
         : [];
 
-      const audioData = {
-        title: audioForm.title,
-        description: audioForm.description,
-        author: audioForm.author,
+      const { error } = await supabase.from('audios').insert([{
+        title: audioForm.title.trim(),
+        description: audioForm.description.trim(),
+        author: audioForm.author.trim(),
         category: audioForm.category,
         audio_url: audioUrl,
-        thumbnail: audioForm.thumbnail || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800',
+        thumbnail: audioForm.thumbnail || DEFAULT_NEWS_IMAGE,
         tags: tagsArray,
-        duration: '00:00'
-      };
-
-      console.log('Inserting audio data:', audioData);
-      const { data, error } = await supabase
-        .from('audios')
-        .insert([audioData])
-        .select();
+        duration: audioDuration
+      }]);
 
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['audios'] });
-
       toast({ title: 'Audio Published!', description: 'Your audio has been uploaded and published successfully.' });
-
-      setAudioForm({ title: '', description: '', author: '', category: '', thumbnail: '', tags: '', audioUrl: '' });
-      setAudioFile(null);
-      setThumbnailFile(null);
-      if (audioPreviewUrl) URL.revokeObjectURL(audioPreviewUrl);
-      setAudioPreviewUrl(null);
+      resetForm();
     } catch (error) {
       console.error('Publishing error:', error);
-      toast({ title: 'Publishing Failed', description: 'There was an error publishing your audio.', variant: 'destructive' });
+      toast({
+        title: 'Publishing Failed',
+        description: error instanceof Error ? error.message : 'There was an error publishing your audio.',
+        variant: 'destructive'
+      });
     } finally {
       setIsUploading(false);
     }
   };
 
+
   const handlePreview = () => {
-     if (uploadMethod === 'link' && audioForm.audioUrl) {
+    if (uploadMethod === 'link' && audioForm.audioUrl) {
       // Open the external URL in new tab
       window.open(audioForm.audioUrl, '_blank');
     } else if (uploadMethod === 'file' && audioPreviewUrl && audioFile) {
@@ -230,7 +205,7 @@ const AudioUploadForm = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handlePublish} className="space-y-6">
-           {/* Upload Method Toggle */}
+          {/* Upload Method Toggle */}
           <div className="mb-6">
             <Label className="text-base font-semibold">Upload Method</Label>
             <div className="flex gap-4 mt-2">
@@ -259,6 +234,7 @@ const AudioUploadForm = () => {
               </button>
             </div>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
@@ -301,7 +277,7 @@ const AudioUploadForm = () => {
                   />
                   {audioForm.audioUrl && (
                     <p className="text-sm text-green-600">
-                      Platform detected: {getAudioPlatform(audioForm.audioUrl)}
+                      Platform detected: {getMediaPlatform(audioForm.audioUrl)}
                     </p>
                   )}
                   <p className="text-sm text-muted-foreground mt-1">
@@ -313,9 +289,12 @@ const AudioUploadForm = () => {
                   <Label htmlFor="audio-file">Audio File *</Label>
                   <Input id="audio-file" type="file" accept="audio/*" onChange={handleAudioUpload} className="mb-2" disabled={isUploading} />
                   {audioFile && (
-                    <p className="text-sm text-green-600">Selected: {audioFile.name} ({(audioFile.size / (1024 * 1024)).toFixed(2)} MB)</p>
+                    <p className="text-sm text-green-600">
+                      Selected: {audioFile.name} ({(audioFile.size / (1024 * 1024)).toFixed(2)} MB) — length {audioDuration}
+                    </p>
                   )}
-                  <p className="text-sm text-muted-foreground">Maximum file size: 50MB (Supabase free plan limit)</p>
+                  <p className="text-sm text-muted-foreground">Maximum file size: {MAX_AUDIO_SIZE_MB}MB</p>
+
                 </div>
               )}
               <div>
@@ -335,7 +314,7 @@ const AudioUploadForm = () => {
             </div>
           </div>
           <div className="flex gap-4 pt-4">
-             <Button 
+            <Button 
               type="button" 
               variant="outline" 
               onClick={handlePreview} 

@@ -10,12 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { LogOut, Upload, Eye, Home, Clock, Shield } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { useNews } from '../contexts/NewsContext';
-import { supabase } from '../integrations/supabase/Client';
+import { uploadToBucket, MAX_AUDIO_SIZE_MB, MAX_IMAGE_SIZE_MB, isValidHttpUrl } from '../utils/mediaUpload';
 import VideoUploadForm from '../components/VideoUploadForm';
 import AudioUploadForm from '../components/AudioUploadForm';
 import BreakingNewsManager from '../components/BreakingNewsManager';
-import RadioPlayer from '@/components/RadioPlayer';
-
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sessionTimeLeft, setSessionTimeLeft] = useState(0);
@@ -39,9 +37,9 @@ const Admin = () => {
   const { createArticle } = useNews();
 
   const categories = [
-    'Local','National','Agriculture', 'Culture & Lifestyle', 'Foreign', 'Sports',  
-     'Interviews'
+    'Local', 'National', 'Agriculture', 'Culture and Lifestyle', 'Foreign', 'Sports'
   ];
+
 
   useEffect(() => {
     const checkAuthentication = () => {
@@ -124,99 +122,57 @@ const Admin = () => {
     return `${hours}h ${mins}m`;
   };
 
-  const uploadImageToStorage = async (file: File): Promise<string | null> => {
-    try {
-      setIsUploadingImage(true);
-      
-      // Generate unique filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `news-articles/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from('news-images')
-        .upload(filePath, file);
-
-      if (error) {
-        console.error('Upload error:', error);
-        throw error;
-      }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('news-images')
-        .getPublicUrl(filePath);
-
-      return publicUrl;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive"
-      });
-      return null;
-    } finally {
-      setIsUploadingImage(false);
-    }
-  };
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files);
+    if (!files || files.length === 0) return;
+    const fileArray = Array.from(files);
+
+    setIsUploadingImage(true);
+    const results = await Promise.all(
+      fileArray.map(file => uploadToBucket(file, 'news-images', 'news-articles', MAX_IMAGE_SIZE_MB))
+    );
+    setIsUploadingImage(false);
+    e.target.value = '';
+
+    const successfulUrls = results.map(r => r.url).filter((url): url is string => !!url);
+    const failures = results.filter(r => r.error);
+
+    if (successfulUrls.length > 0) {
       setImageFiles(prev => [...prev, ...fileArray]);
-      
-      // Upload all files to Supabase Storage
-      const uploadPromises = fileArray.map(file => uploadImageToStorage(file));
-      const uploadedUrls = await Promise.all(uploadPromises);
-      
-      const successfulUrls = uploadedUrls.filter(url => url !== null) as string[];
-      
-      if (successfulUrls.length > 0) {
-        setNewsForm(prev => ({
-          ...prev, 
-          images: [...prev.images, ...successfulUrls]
-        }));
-        toast({
-          title: "Images Uploaded",
-          description: `${successfulUrls.length} image(s) uploaded successfully.`,
-        });
-      }
+      setNewsForm(prev => ({ ...prev, images: [...prev.images, ...successfulUrls] }));
+      toast({
+        title: "Images Uploaded",
+        description: `${successfulUrls.length} image(s) uploaded successfully.`,
+      });
+    }
+    if (failures.length > 0) {
+      toast({
+        title: "Some Images Failed",
+        description: failures.map(f => f.error).join(' '),
+        variant: "destructive"
+      });
     }
   };
-
 
   const handleArticleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 50 * 1024 * 1024) {
-      toast({
-        title: "File Too Large",
-        description: "Audio file must be less than 50MB.",
-        variant: "destructive"
-      });
+
+    setIsUploadingAudio(true);
+    const { url, error } = await uploadToBucket(file, 'audios', 'article-audio', MAX_AUDIO_SIZE_MB);
+    setIsUploadingAudio(false);
+    e.target.value = '';
+
+    if (!url) {
+      toast({ title: "Upload Failed", description: error, variant: "destructive" });
       return;
     }
-    setIsUploadingAudio(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const filePath = `article-audio/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const { error } = await supabase.storage.from('audios').upload(filePath, file, { cacheControl: '3600', upsert: true });
-      if (error) throw error;
-      const { data: { publicUrl } } = supabase.storage.from('audios').getPublicUrl(filePath);
-      setNewsForm(prev => ({ ...prev, audio_url: publicUrl }));
-      toast({ title: "Audio Uploaded", description: "Audio attached to this article." });
-    } catch (error) {
-      console.error('Audio upload error:', error);
-      toast({ title: "Upload Failed", description: "Failed to upload audio.", variant: "destructive" });
-    } finally {
-      setIsUploadingAudio(false);
-    }
+    setNewsForm(prev => ({ ...prev, audio_url: url }));
+    toast({ title: "Audio Uploaded", description: "Audio attached to this article." });
   };
 
 
-   const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = (index: number) => {
     setNewsForm(prev => ({
       ...prev,
       images: prev.images.filter((_, i) => i !== index)
@@ -236,6 +192,16 @@ const Admin = () => {
       });
       return;
     }
+
+    if (newsForm.audio_url.trim() && !isValidHttpUrl(newsForm.audio_url)) {
+      toast({
+        title: "Invalid Audio Link",
+        description: "Please enter a valid audio link starting with https://",
+        variant: "destructive"
+      });
+      return;
+    }
+
 
     setIsPublishing(true);
 
@@ -439,7 +405,7 @@ const Admin = () => {
                     <Label htmlFor="images">Article Images (Multiple)</Label>
                     <div className="mt-2">
                       <Input
-                        id="images"                        
+                        id="images"
                         type="file"
                         accept="image/*"
                         multiple
@@ -450,7 +416,7 @@ const Admin = () => {
                       {isUploadingImage && (
                         <p className="text-sm text-blue-600">Uploading images...</p>
                       )}
-                       {newsForm.images.length > 0 && (
+                      {newsForm.images.length > 0 && (
                         <div className="mt-2 grid grid-cols-2 gap-2">
                           {newsForm.images.map((imageUrl, index) => (
                             <div key={index} className="relative">
@@ -473,9 +439,7 @@ const Admin = () => {
                     </div>
                   </div>
 
-
-
-                    <div>
+                  <div>
                     <Label htmlFor="article-audio">Audio (optional)</Label>
                     <Input
                       id="article-audio"
@@ -506,8 +470,7 @@ const Admin = () => {
                     <p className="text-sm text-muted-foreground mt-1">
                       If added, the audio player appears only on the full news page.
                     </p>
-                  </div>   
-
+                  </div>
 
                   <div>
                     <Label htmlFor="excerpt">Description/Excerpt *</Label>
@@ -520,6 +483,7 @@ const Admin = () => {
                       onChange={(e) => setNewsForm({...newsForm, excerpt: e.target.value})}
                     />
                   </div>
+
                 </div>
               </div>
 
@@ -561,9 +525,7 @@ const Admin = () => {
         <BreakingNewsManager />
         <VideoUploadForm />
         <AudioUploadForm />
-
       </main>
-      <RadioPlayer/>
     </div>
   );
 };
