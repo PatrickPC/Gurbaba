@@ -1,13 +1,15 @@
 import { useParams, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Eye, Link2, Check } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import RadioPlayer from '@/components/RadioPlayer';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
 import { getPublishedDate, getReadTime, getImages } from '../utils/newsHelpers';
 import { DEFAULT_NEWS_IMAGE } from '@/constants/images';
+import { SITE_NAME, articleUrl, clampText, toAbsoluteUrl } from '@/utils/seo';
+
 
 
 const NewsDetail = () => {
@@ -16,19 +18,17 @@ const NewsDetail = () => {
   const viewCountedRef = useRef<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  
   // Try to get article from database first, fallback to mock data
 
   const databaseArticle = getArticleById(id || '');
   const mockArticle = mockNews.find(news => news.id === id);
   const article = databaseArticle || mockArticle;
-  
+
   // Get related news from the same category
   const allNews = articles.length > 0 ? articles : mockNews;
   const relatedNews = allNews.filter(news => 
     news.id !== id && news.category === article?.category
   ).slice(0, 6);
-
 
   // Increment view count only once per article visit
   useEffect(() => {
@@ -36,7 +36,7 @@ const NewsDetail = () => {
       viewCountedRef.current = id;
       incrementArticleViews(id);
     }
-    }, [id, databaseArticle, incrementArticleViews]);
+  }, [id, databaseArticle, incrementArticleViews]);
 
   if (loading) {
     return (
@@ -70,7 +70,7 @@ const NewsDetail = () => {
   const publishedDate = getPublishedDate(article);
   const readTime = getReadTime(article);
 
-   const shareUrl = typeof window !== 'undefined'
+  const shareUrl = typeof window !== 'undefined'
 
     ? `${window.location.origin}/news/${article.id}`
     : `/news/${article.id}`;
@@ -135,10 +135,40 @@ const NewsDetail = () => {
   const youtubeEmbed = audioUrl ? getYouTubeEmbed(audioUrl) : null;
   const spotifyEmbed = audioUrl ? getSpotifyEmbed(audioUrl) : null;
 
-  return (
+  // Social sharing metadata for this specific article
+  const canonicalUrl = articleUrl(article.id);
+  const metaTitle = `${article.title} | ${SITE_NAME}`;
+  const metaDescription = clampText(article.excerpt);
+  const metaImage =
+    toAbsoluteUrl(getImages(article)[0]) || toAbsoluteUrl(DEFAULT_NEWS_IMAGE)!;
+  const publishedIso = databaseArticle?.published_at
+    ? new Date(databaseArticle.published_at).toISOString()
+    : undefined;
 
+  return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet prioritizeSeoTags>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:site_name" content={SITE_NAME} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={article.title} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={metaImage} />
+        <meta property="og:image:secure_url" content={metaImage} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={metaImage} />
+        {publishedIso && <meta property="article:published_time" content={publishedIso} />}
+        {article.author && <meta property="article:author" content={article.author} />}
+        {article.category && <meta property="article:section" content={article.category} />}
+      </Helmet>
       <Header />
+
+
       
       <main className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
@@ -159,15 +189,15 @@ const NewsDetail = () => {
                   {article.category}
                 </span>
               </div>
-              
+
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 {article.title}
               </h1>
-              
+
               <p className="text-xl text-gray-600 mb-6">
                 {article.excerpt}
               </p>
-              
+
               <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-500">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -191,9 +221,8 @@ const NewsDetail = () => {
                     </div>
                   )}
                 </div>
-                
-                <div className="flex items-center gap-2">
 
+                <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopyLink}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -202,7 +231,6 @@ const NewsDetail = () => {
                   >
                     {copied ? <Check size={16} className="text-green-600" /> : <Link2 size={16} />}
                   </button>
-
                   <button
                     onClick={handleNativeShare}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -211,21 +239,19 @@ const NewsDetail = () => {
                   >
                     <Share2 size={16} />
                   </button>
-
                 </div>
 
               </div>
-
             </div>
 
             {/* Article Content with Interspersed Images */}
             <div className="p-6">
               <div className="prose max-w-none">
-             {(() => {
+                {(() => {
                   const paragraphs = article.content.split('\n\n');
                   const images = getImages(article);
                   const content = [];
-                  
+
                   paragraphs.forEach((paragraph, pIndex) => {
                     // Add image before paragraph if available
                     if (pIndex < images.length) {
@@ -242,7 +268,7 @@ const NewsDetail = () => {
                         </div>
                       );
                     }
-                    
+
                     // Add paragraph
                     content.push(
                       <p key={`para-${pIndex}`} className="mb-4 text-gray-800 leading-relaxed">
@@ -250,7 +276,7 @@ const NewsDetail = () => {
                       </p>
                     );
                   });
-                  
+
                   // Add remaining images if there are more images than paragraphs
                   for (let i = paragraphs.length; i < images.length; i++) {
                     content.push(
@@ -266,12 +292,12 @@ const NewsDetail = () => {
                       </div>
                     );
                   }
-                  
+
                   return content;
                 })()}
               </div>
 
-                  {/* Attached Audio (only shown on the detail page when present) */}
+              {/* Attached Audio (only shown on the detail page when present) */}
               {audioUrl && (
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <h3 className="text-lg font-semibold mb-4">Listen to this article</h3>
@@ -301,7 +327,7 @@ const NewsDetail = () => {
                   )}
                 </div>
               )}
-              
+
               {/* Tags */}
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex flex-wrap gap-2">
@@ -336,7 +362,7 @@ const NewsDetail = () => {
                     <Twitter size={16} />
                     Tweet
                   </button>
-                   <button
+                  <button
                     onClick={shareToEmail}
                     className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
                     aria-label="Share via Email"
@@ -354,6 +380,7 @@ const NewsDetail = () => {
                   </button>
                 </div>
               </div>
+
             </div>
           </article>
 
@@ -363,7 +390,7 @@ const NewsDetail = () => {
               <h2 className="text-xl font-bold text-red-600 mb-6 border-b-2 border-red-600 pb-2">
                 EDITOR'S PICKS
               </h2>
-              
+
               <div className="space-y-6">
                 {relatedNews.slice(0, 4).map((news) => (
                   <Link key={news.id} to={`/news/${news.id}`} className="block group">
@@ -394,7 +421,7 @@ const NewsDetail = () => {
           <h2 className="text-2xl font-bold text-red-600 mb-8 border-b-2 border-red-600 pb-2 inline-block">
             RELATED NEWS
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedNews.map((news) => (
               <Link key={news.id} to={`/news/${news.id}`} className="block group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -426,7 +453,6 @@ const NewsDetail = () => {
       </main>
 
       <Footer />
-      <RadioPlayer/>
     </div>
   );
 };

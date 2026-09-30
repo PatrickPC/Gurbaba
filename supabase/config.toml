@@ -1,1 +1,4 @@
 project_id = "driaslnydssdaksnjqgd"
+
+[functions.og-news]
+verify_jwt = false
