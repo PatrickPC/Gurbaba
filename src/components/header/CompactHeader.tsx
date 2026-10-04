@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useLanguage } from '../../contexts/LanguageContext';
 import Navigation from './Navigation';
+import logoImage from '../../assets/radio-gurbaba-logo.png';
 
 interface CompactHeaderProps {
   isMenuOpen: boolean;
@@ -28,9 +29,15 @@ const CompactHeader = ({ isMenuOpen, setIsMenuOpen }: CompactHeaderProps) => {
       <div className="flex justify-between items-center py-3">
         <Link to="/" className="flex-1 text-center">
           <div className="flex flex-col items-center">
-            <div className="text-lg md:text-xl font-bold text-gray-900 tracking-wider">
+            {/* <div className="text-lg md:text-xl font-bold text-gray-900 tracking-wider">
               {language === 'EN' ? 'GURBABA' : ' गुर्बाबा'}
-            </div>
+            </div> */}
+            <img
+            src=  {logoImage}
+            alt="रेडियो गुरबाबा"
+            className="h-14 w-auto mix-blend-multiply"
+          />
+
           </div>
         </Link>
 

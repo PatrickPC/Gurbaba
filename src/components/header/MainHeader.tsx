@@ -3,6 +3,7 @@ import { Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useLanguage } from '../../contexts/LanguageContext';
+import logoImage from '../../assets/radio-gurbaba-logo.png';
 
 const MainHeader = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -21,9 +22,15 @@ const MainHeader = () => {
     <div className="flex justify-between items-center py-4">
       <Link to="/" className="flex-1 text-center">
         <div className="flex flex-col items-center">
-          <div className="text-3xl md:text-5xl font-bold text-gray-900 tracking-wider">
+          {/* <div className="text-3xl md:text-5xl font-bold text-gray-900 tracking-wider">
             {language === 'EN' ? 'GURBABA' : ' गुर्बाबा'}
-          </div>
+          </div> */}
+          <img
+            src={logoImage}
+            alt="रेडियो गुरबाबा"
+            className="h-28 w-auto mix-blend-multiply"
+          />
+         
           <div className="text-base md:text-lg text-gray-600 mt-1">{t('header.tagline')}</div>
         </div>
       </Link>

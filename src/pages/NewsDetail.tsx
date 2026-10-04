@@ -1,3 +1,4 @@
+
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Clock, User, Share2, Facebook, Twitter, Mail, Bookmark, Eye, Link2, Check } from 'lucide-react';
@@ -8,7 +9,7 @@ import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
 import { getPublishedDate, getReadTime, getImages } from '../utils/newsHelpers';
 import { DEFAULT_NEWS_IMAGE } from '@/constants/images';
-import { SITE_NAME, articleUrl, clampText, toAbsoluteUrl } from '@/utils/seo';
+import { SITE_NAME, articleShareUrl, articleUrl, clampText, toAbsoluteUrl } from '@/utils/seo';
 
 
 
@@ -17,13 +18,13 @@ const NewsDetail = () => {
   const { getArticleById, articles, loading, incrementArticleViews } = useNews();
   const viewCountedRef = useRef<string | null>(null);
   const [copied, setCopied] = useState(false);
-
+  
   // Try to get article from database first, fallback to mock data
 
   const databaseArticle = getArticleById(id || '');
   const mockArticle = mockNews.find(news => news.id === id);
   const article = databaseArticle || mockArticle;
-
+  
   // Get related news from the same category
   const allNews = articles.length > 0 ? articles : mockNews;
   const relatedNews = allNews.filter(news => 
@@ -70,11 +71,8 @@ const NewsDetail = () => {
   const publishedDate = getPublishedDate(article);
   const readTime = getReadTime(article);
 
-  const shareUrl = typeof window !== 'undefined'
-
-    ? `${window.location.origin}/news/${article.id}`
-    : `/news/${article.id}`;
-  const shareText = `${article.title} | FM News Portal`;
+  const shareUrl = articleShareUrl(article.id);
+  const shareText = `${article.title} | ${SITE_NAME}`;
 
   const handleNativeShare = async () => {
     if (navigator.share) {
@@ -167,7 +165,7 @@ const NewsDetail = () => {
         {article.category && <meta property="article:section" content={article.category} />}
       </Helmet>
       <Header />
-
+      
 
       
       <main className="container mx-auto px-4 py-8">
@@ -189,15 +187,15 @@ const NewsDetail = () => {
                   {article.category}
                 </span>
               </div>
-
+              
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 {article.title}
               </h1>
-
+              
               <p className="text-xl text-gray-600 mb-6">
                 {article.excerpt}
               </p>
-
+              
               <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-500">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -221,7 +219,7 @@ const NewsDetail = () => {
                     </div>
                   )}
                 </div>
-
+                
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopyLink}
@@ -251,7 +249,7 @@ const NewsDetail = () => {
                   const paragraphs = article.content.split('\n\n');
                   const images = getImages(article);
                   const content = [];
-
+                  
                   paragraphs.forEach((paragraph, pIndex) => {
                     // Add image before paragraph if available
                     if (pIndex < images.length) {
@@ -268,7 +266,7 @@ const NewsDetail = () => {
                         </div>
                       );
                     }
-
+                    
                     // Add paragraph
                     content.push(
                       <p key={`para-${pIndex}`} className="mb-4 text-gray-800 leading-relaxed">
@@ -276,7 +274,7 @@ const NewsDetail = () => {
                       </p>
                     );
                   });
-
+                  
                   // Add remaining images if there are more images than paragraphs
                   for (let i = paragraphs.length; i < images.length; i++) {
                     content.push(
@@ -292,11 +290,11 @@ const NewsDetail = () => {
                       </div>
                     );
                   }
-
+                  
                   return content;
                 })()}
               </div>
-
+              
               {/* Attached Audio (only shown on the detail page when present) */}
               {audioUrl && (
                 <div className="mt-8 pt-6 border-t border-gray-200">
@@ -390,7 +388,7 @@ const NewsDetail = () => {
               <h2 className="text-xl font-bold text-red-600 mb-6 border-b-2 border-red-600 pb-2">
                 EDITOR'S PICKS
               </h2>
-
+              
               <div className="space-y-6">
                 {relatedNews.slice(0, 4).map((news) => (
                   <Link key={news.id} to={`/news/${news.id}`} className="block group">
@@ -421,7 +419,7 @@ const NewsDetail = () => {
           <h2 className="text-2xl font-bold text-red-600 mb-8 border-b-2 border-red-600 pb-2 inline-block">
             RELATED NEWS
           </h2>
-
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedNews.map((news) => (
               <Link key={news.id} to={`/news/${news.id}`} className="block group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">

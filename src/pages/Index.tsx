@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BreakingNews from '../components/BreakingNews';
@@ -7,7 +6,7 @@ import VideoSection from '../components/VideoSection';
 import Advertisement from '../components/Advertisement';
 import { mockNews } from '../data/mockNews';
 import { useNews } from '../contexts/NewsContext';
-import { getPublishedDate, getImage } from '../utils/newsHelpers';
+import { getImage } from '../utils/newsHelpers';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Index = () => {
@@ -16,8 +15,11 @@ const Index = () => {
   
   // Use database articles if available, fallback to mock data
   const allNews = articles.length > 0 ? articles : mockNews;
-  const displayFeaturedNews = articles.length > 0 ? articles[0] : mockNews[0];
-  const displayMainNews = articles.length > 1 ? articles.slice(1, 4) : mockNews.slice(1, 4);
+  const recentNews = articles.length > 0
+    ? articles.slice(0, 4)
+    : [...mockNews]
+        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+        .slice(0, 4);
 
   // New categories matching navbar
   const categoryNews = {
@@ -70,44 +72,12 @@ const Index = () => {
       </div>
       
       <main className="container mx-auto px-4 py-8">
-        {/* Featured Story Section */}
-        <section className="mb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Featured Story */}
-            <div className="lg:col-span-2">
-              <NewsCard {...displayFeaturedNews} featured={true} />
-            </div>
-            
-            {/* Sidebar - Local News */}
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
-                  {getCategoryLabel('Local')}
-                </h2>
-                {categoryNews.Local.slice(0, 3).map((news) => (
-                  <div key={news.id} className="mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-2 hover:text-red-600 transition-colors">
-                      <a href={`/news/${news.id}`}>{news.title}</a>
-                    </h3>
-                    <div className="flex items-center text-sm text-gray-500 mb-2">
-                      <span>By {news.author}</span>
-                    </div>
-                    <p className="text-gray-600 text-sm line-clamp-3">{news.excerpt}</p>
-                  </div>
-                ))}
-                {categoryNews.Local.length === 0 && (
-                  <p className="text-gray-500 text-sm">No local news available.</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* Main News Grid */}
-        <section className="mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayMainNews.map((news) => (
-              <NewsCard key={news.id} {...news} />
+       {/* Recent editorial news feed */}
+        <section className="mx-auto mb-16 w-full md:w-[88%] lg:w-[84%]" aria-label="Recent news">
+          <div className="space-y-12 md:space-y-16">
+            {recentNews.map((news) => (
+              <NewsCard key={news.id} {...news} layout="editorial" />
             ))}
           </div>
         </section>

@@ -16,6 +16,14 @@ export const toAbsoluteUrl = (value?: string | null): string | null => {
 /** Absolute URL of a news article page. */
 export const articleUrl = (id: string) => `${SITE_URL}/news/${id}`;
 
+/** Crawler-readable share URL. It redirects people to the canonical article page. */
+export const articleShareUrl = (id: string): string => {
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  if (!projectId) return articleUrl(id);
+  return `https://${projectId}.supabase.co/functions/v1/og-news/${encodeURIComponent(id)}`;
+};
+
+
 /** Trim text to a safe length for meta descriptions. */
 export const clampText = (text: string | undefined | null, max = 200): string => {
   const value = (text || '').replace(/\s+/g, ' ').trim();
