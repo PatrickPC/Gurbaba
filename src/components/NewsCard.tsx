@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Clock, User, Eye, BookOpen } from 'lucide-react';
 import { DEFAULT_NEWS_IMAGE, DEFAULT_VIDEO_THUMBNAIL } from '@/constants/images';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 
 interface NewsCardProps {
@@ -35,6 +36,32 @@ const NewsCard = ({
   featured = false,
   layout = 'card'
 }: NewsCardProps) => {
+   const { t } = useLanguage();
+  const categoryTranslationKeys: Record<string, string> = {
+    local: 'nav.local',
+    national: 'nav.national',
+    agriculture: 'nav.agriculture',
+    'culture and lifestyle': 'nav.cultureLifestyle',
+    'culture & lifestyle': 'nav.cultureLifestyle',
+    'culture-lifestyle': 'nav.cultureLifestyle',
+    foreign: 'nav.foreign',
+    sports: 'nav.sports',
+    interview: 'nav.interview',
+    video: 'nav.video',
+    audio: 'nav.audio',
+    'स्थानीय': 'nav.local',
+    'राष्ट्रिय': 'nav.national',
+    'कृषी': 'nav.agriculture',
+    'कृषि': 'nav.agriculture',
+    'संस्कृति र जीवनशैली': 'nav.cultureLifestyle',
+    'विदेश': 'nav.foreign',
+    'खेलकुद': 'nav.sports',
+    'अन्तर्वार्ता': 'nav.interview',
+    'भिडियो': 'nav.video',
+    'अडियो': 'nav.audio',
+  };
+  const categoryKey = categoryTranslationKeys[category.trim().toLowerCase()];
+  const categoryLabel = categoryKey ? t(categoryKey) : category;
   const displayDate = published_at || publishedAt || 'Unknown date';
     const displayImage = (images && images.length > 0 ? images[0] : image) || DEFAULT_NEWS_IMAGE;
 
@@ -50,6 +77,9 @@ const NewsCard = ({
         aria-label={title}
       >
         <article className="border-b border-border pb-8  md:pb-16">
+          <p className="mb-3 text-center text-base font-bold leading-relaxed text-destructive sm:text-lg">
+            {categoryLabel}
+          </p>
          
           <h2 className="text-center text-2xl font-bold leading-[1.45] py-2 text-foreground transition-colors duration-200 group-hover:text-primary sm:text-3xl md:text-4xl lg:text-[2.625rem]">
             {title}
