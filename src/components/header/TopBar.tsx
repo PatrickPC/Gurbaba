@@ -30,35 +30,33 @@ const TopBar = () => {
 
   // Fetch weather data for Bardiya, Nepal
   const fetchWeatherData = async () => {
+      // Bardiya district (Gulariya), Nepal — Open-Meteo, free & no API key
+    const lat = 28.2058;
+    const lon = 81.3486;
     try {
-      // Using OpenWeatherMap API - this is a public API
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=Bardiya,NP&appid=demo&units=metric`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        setWeatherData({
-          temp: `${Math.round(data.main.temp)}°C`,
-          condition: data.weather[0].main,
-          airQuality: 'Good' // This would need a separate API call for real air quality data
-        });
-      } else {
-        // Fallback to demo data if API fails
-        setWeatherData({
-          temp: '24°C-8°C',
-          condition: 'Clear',
-          airQuality: 'Good'
-        });
-      }
-    } catch (error) {
-      console.log('Weather API error, using fallback data:', error);
-      // Fallback weather data for Bardiya
+      const [wRes, aRes] = await Promise.all([
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=Asia%2FKathmandu`),
+        fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`),
+      ]);
+      const w = wRes.ok ? await wRes.json() : null;
+      const a = aRes.ok ? await aRes.json() : null;
+      const temp = w?.current?.temperature_2m;
+      const aqi = a?.current?.us_aqi;
+      const aqiLabel =
+        typeof aqi !== 'number' ? '—'
+        : aqi <= 50 ? `Good (${aqi})`
+        : aqi <= 100 ? `Moderate (${aqi})`
+        : aqi <= 150 ? `Unhealthy for sensitive (${aqi})`
+        : aqi <= 200 ? `Unhealthy (${aqi})`
+        : `Very unhealthy (${aqi})`;
       setWeatherData({
-        temp: '28°C',
-        condition: 'Clear',
-        airQuality: 'Good'
+        temp: typeof temp === 'number' ? `${Math.round(temp)}°C` : '—',
+        condition: '',
+        airQuality: aqiLabel,
       });
+        } catch (error) {
+      console.log('Weather API error:', error);
+      setWeatherData({ temp: '—', condition: '', airQuality: '—' });
     }
   };
 
