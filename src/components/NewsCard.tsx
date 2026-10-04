@@ -77,11 +77,11 @@ const NewsCard = ({
         aria-label={title}
       >
         <article className="border-b border-border pb-8  md:pb-16">
-          <p className="mb-3 text-center text-base font-bold leading-relaxed text-destructive sm:text-lg">
+         <p className="mx-auto mb-3 w-fit category-tag px-5 py-1 text-center text-xs font-extrabold uppercase tracking-widest sm:text-sm lg:text-[1.125rem]">
             {categoryLabel}
           </p>
          
-          <h2 className="text-center text-2xl font-bold leading-[1.45] py-2 text-foreground transition-colors duration-200 group-hover:text-primary sm:text-3xl md:text-4xl lg:text-[2.625rem]">
+          <h2 className="text-center text-2xl font-bold leading-[1.45] py-2 text-foreground transition-colors duration-200 group-hover:text-primary sm:text-3xl md:text-4xl lg:text-[3.625rem] lg:leading-[1.2]">
             {title}
           </h2>
 
@@ -100,12 +100,12 @@ const NewsCard = ({
                 <span>{readTime}</span>
               </span>
             )}
-            {views !== undefined && (
+            {/* {views !== undefined && (
               <span className="inline-flex items-center gap-1.5">
                 <Eye size={14} aria-hidden="true" />
                 <span>{views.toLocaleString()}</span>
-              </span>
-            )}
+              </span>s
+            )} */}
           </div>
 
           <div className="mt-5 aspect-[16/9] overflow-hidden rounded-md bg-muted md:mt-7 md:aspect-[2/1]">

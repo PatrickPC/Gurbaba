@@ -119,3 +119,12 @@
   transform: scale(1.2);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
+
+/* Homepage editorial feed: highlighted category tag above the headline.
+   Background follows the destructive token so it stays themed in dark mode;
+   the label itself stays white for contrast on the red block. */
+.category-tag {
+  background-color: #c31111;;
+  color: hsl(0 0% 100%);
+}
