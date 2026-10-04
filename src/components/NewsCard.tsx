@@ -76,6 +76,8 @@ const NewsCard = ({
         className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4"
         aria-label={title}
       >
+
+        
         <article className="border-b border-border pb-8  md:pb-16">
          <p className="mx-auto mb-3 w-fit category-tag px-5 py-1 text-center text-xs font-extrabold uppercase tracking-widest sm:text-sm lg:text-[1.125rem]">
             {categoryLabel}

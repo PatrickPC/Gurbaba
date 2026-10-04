@@ -16,10 +16,10 @@ const Index = () => {
   // Use database articles if available, fallback to mock data
   const allNews = articles.length > 0 ? articles : mockNews;
   const recentNews = articles.length > 0
-    ? articles.slice(0, 4)
+    ? articles.slice(0, 10)
     : [...mockNews]
         .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-        .slice(0, 4);
+        .slice(0, 10);
 
   // New categories matching navbar
   const categoryNews = {
